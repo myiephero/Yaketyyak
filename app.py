@@ -97,7 +97,7 @@ automatically. No copy-paste needed!
 
 [bold]How translations work:[/]
   1. Your command/output is checked against a built-in knowledge
-     base of 79 commands and 20+ common error patterns
+     base of 500+ commands and 50+ common error patterns
   2. If no match is found, AI provides a detailed explanation
   3. Toggle AI off with Ctrl+T for offline/local-only mode
 
@@ -330,7 +330,7 @@ class TerminalTranslator(App):
             trans.write("[yellow]AI is off \u2014 no AI backend detected.[/]")
             trans.write("[dim]Install Ollama + qwen2.5-coder for free local AI,[/]")
             trans.write("[dim]or set OPENAI_API_KEY for cloud AI.[/]")
-            trans.write("[dim]The built-in knowledge base (79 commands) works without AI![/]")
+            trans.write("[dim]The built-in knowledge base (500+ commands) works without AI![/]")
         elif hasattr(self, '_ai_status') and self._ai_status == "ollama_ready":
             trans.write("")
             trans.write(f"[green]AI powered by Ollama (local, private, free)[/]")
