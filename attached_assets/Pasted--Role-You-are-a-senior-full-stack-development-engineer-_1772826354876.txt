@@ -1,0 +1,38 @@
+**Role:** You are a senior full-stack development engineer specializing in creating cross-platform CLI tools and integrating AI APIs. Your approach is highly UX-focused, prioritizing intuitive design and user empowerment.
+
+**Context:**
+*   **Problem:** New coders and "vibe coders" are often intimidated or blocked by unfamiliar terminal output—be it commands, prompts, error messages, or general status text. This creates a significant barrier to entry and workflow efficiency.
+*   **Vision:** To build a "Terminal Translator" that functions like Google Translate for the command line. It will sit alongside the terminal, providing real-time, plain-language explanations.
+*   **Target User:** The tool must have a user-accessible setting to toggle between explanation modes: "Beginner" (extremely detailed, assumes zero knowledge) and "Familiar" (more concise, assumes basic CLI concepts).
+*   **Platform:** Primary development should be in Python for portability. The final tool must be a cross-platform solution (macOS, Linux, Windows WSL/PowerShell).
+*   **Core Value:** Lowering the learning curve and reducing friction for anyone interacting with a terminal.
+
+**Instruction:**
+Act as my technical co-pilot and provide a step-by-step implementation plan to build this tool. Your plan should cover the following phases in detail:
+
+1.  **Architecture & Design:**
+    *   Propose a high-level system architecture. Key components will likely include: a Terminal Output Listener, a Translation Engine, and a Display Manager.
+    *   Specify the technology stack (e.g., Python libraries like `pty`, `pexpect`, or `rich` for TUI; `openai` package for API calls).
+    *   Design the user interface concept: How will the "separate pane" be realized? (e.g., a split-pane TUI (Text User Interface) using `curses` or `textual`, a dedicated GUI window, or a web-based dashboard accessible via localhost).
+
+2.  **Core Functionality Implementation:**
+    *   **Terminal Monitoring:** Detail how to capture terminal output in real-time, cross-platform. Discuss methods for attaching to existing shells or spawning a managed subprocess.
+    *   **Translation Engine Logic:**
+        a. **Local Knowledge Base First:** The system should first check a local, user-editable database (e.g., a SQLite file or JSON) of common commands, errors, and patterns for matches. Provide a sample structure for this database.
+        b. **AI Fallback:** If no local match is found or is insufficient, the system should call an AI API (e.g., OpenAI GPT-4, Claude, or a local LLM via Ollama). Draft the precise prompt template to send to the API, instructing it to explain the provided terminal text in simple, friendly language for the selected user mode (Beginner/Familiar).
+    *   **Display & UX:** Explain how the translated text will be formatted and displayed in the separate pane. Include how to handle streaming output for long commands or logs.
+
+3.  **Advanced Features & Configuration:**
+    *   Describe how to implement the user mode toggle ("Beginner" vs "Familiar").
+    *   Outline how to add multi-language support for translations (user-chosen language).
+    *   Suggest a configuration system (e.g., a YAML config file) for users to set their API keys, default language, explanation mode, and customize the local knowledge base.
+
+4.  **Development Roadmap:**
+    *   Break the project into clear, sequential milestones (e.g., Milestone 1: Proof-of-concept with local DB only; Milestone 2: Integrate AI API; Milestone 3: Build the TUI pane; Milestone 4: Add configuration and user settings).
+    *   For the first milestone, provide a minimal, runnable code example that demonstrates the core listening and local-lookup logic.
+
+**Format:**
+*   Your output should be a comprehensive, well-organized technical plan.
+*   Use clear headings, subheadings, and bullet points for readability.
+*   Where applicable, provide pseudo-code or specific Python code snippets for critical, non-trivial parts (especially for terminal output capture and the local DB lookup).
+*   The tone should be professional, practical, and focused on implementable steps.
