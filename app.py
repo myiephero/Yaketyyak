@@ -25,7 +25,7 @@ from textual.widgets import (
 from textual.reactive import reactive
 from textual.message import Message
 
-from translator import translate, LANGUAGE_NAMES
+from translator import translate, LANGUAGE_NAMES, AI_AVAILABLE
 from knowledge_base import ensure_knowledge_base_exists
 
 ANSI_ESCAPE = re.compile(r"\x1b\[[0-9;]*[a-zA-Z]|\x1b\].*?\x07|\x1b\[.*?[@-~]|\r")
@@ -367,10 +367,15 @@ class TerminalTranslator(App):
 
     def on_mount(self) -> None:
         self.kb = ensure_knowledge_base_exists()
+        if not AI_AVAILABLE:
+            self.use_ai = False
         self.shell = ShellProcess(on_output=self._on_shell_output)
         self.shell.start()
         shell_input = self.query_one("#shell-input", Input)
         shell_input.focus()
+        if not AI_AVAILABLE:
+            ai_label = self.query_one("#ai-label", Label)
+            ai_label.update("AI: OFF")
         self._show_welcome()
 
     def _show_welcome(self) -> None:
@@ -393,6 +398,11 @@ class TerminalTranslator(App):
         trans.write(f"  [cyan]5.[/] [bold]{STARTER_COMMANDS[4][0]}[/] \u2014 {STARTER_COMMANDS[4][1]}")
         trans.write("")
         trans.write("[dim]Ctrl+B: Mode  |  Ctrl+T: AI  |  Ctrl+L: Clear  |  Ctrl+Q: Quit[/]")
+        if not AI_AVAILABLE:
+            trans.write("")
+            trans.write("[yellow]AI is off \u2014 no API key detected.[/]")
+            trans.write("[dim]Set OPENAI_API_KEY to enable AI translations.[/]")
+            trans.write("[dim]The built-in knowledge base (79 commands) works without AI![/]")
         trans.write("[dim]" + "\u2500" * 50 + "[/]")
         self._shown_welcome = True
 

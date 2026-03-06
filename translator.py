@@ -1,14 +1,19 @@
 import os
-from openai import OpenAI
 from knowledge_base import local_lookup, ensure_knowledge_base_exists
 
 AI_INTEGRATIONS_OPENAI_API_KEY = os.environ.get("AI_INTEGRATIONS_OPENAI_API_KEY")
 AI_INTEGRATIONS_OPENAI_BASE_URL = os.environ.get("AI_INTEGRATIONS_OPENAI_BASE_URL")
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
-client = OpenAI(
-    api_key=AI_INTEGRATIONS_OPENAI_API_KEY,
-    base_url=AI_INTEGRATIONS_OPENAI_BASE_URL,
-)
+AI_AVAILABLE = bool(AI_INTEGRATIONS_OPENAI_API_KEY or OPENAI_API_KEY)
+
+client = None
+if AI_AVAILABLE:
+    from openai import OpenAI
+    client = OpenAI(
+        api_key=AI_INTEGRATIONS_OPENAI_API_KEY or OPENAI_API_KEY,
+        base_url=AI_INTEGRATIONS_OPENAI_BASE_URL or None,
+    )
 
 SYSTEM_PROMPTS = {
     "beginner": (
@@ -54,11 +59,15 @@ def get_system_prompt(mode, language="en"):
 
 
 def translate_with_ai(terminal_text, mode="beginner", language="en"):
+    if client is None:
+        raise RuntimeError(
+            "No API key found. Set OPENAI_API_KEY environment variable to enable AI translations. "
+            "The local knowledge base (79 commands) still works without AI."
+        )
+
     system_prompt = get_system_prompt(mode, language)
     user_prompt = f"Explain this terminal output:\n\n{terminal_text}"
 
-    # the newest OpenAI model is "gpt-5" which was released August 7, 2025.
-    # do not change this unless explicitly requested by the user
     response = client.chat.completions.create(
         model="gpt-5",
         messages=[

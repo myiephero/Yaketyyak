@@ -1,8 +1,16 @@
 import json
 import os
+import sys
 import re
 
-DEFAULT_KB_PATH = "terminal_knowledge_base.json"
+
+def _get_user_kb_path():
+    if getattr(sys, 'frozen', False):
+        return os.path.join(os.path.expanduser("~"), ".terminal-translator", "knowledge_base.json")
+    return "terminal_knowledge_base.json"
+
+
+DEFAULT_KB_PATH = _get_user_kb_path()
 
 DEFAULT_KNOWLEDGE_BASE = {
     "commands": {
@@ -491,6 +499,9 @@ def validate_regex(pattern):
 
 def ensure_knowledge_base_exists(path=None):
     kb_path = path or DEFAULT_KB_PATH
+    kb_dir = os.path.dirname(kb_path)
+    if kb_dir and not os.path.exists(kb_dir):
+        os.makedirs(kb_dir, exist_ok=True)
     if not os.path.exists(kb_path):
         save_knowledge_base(DEFAULT_KNOWLEDGE_BASE, kb_path)
         return load_knowledge_base(kb_path)

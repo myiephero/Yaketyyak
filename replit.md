@@ -1,6 +1,6 @@
 # Terminal Translator
 
-A split-pane TUI (Text User Interface) tool that translates terminal/CLI output into plain-language explanations in real time. Built with Python's Textual framework and pty for real shell integration.
+A split-pane TUI (Text User Interface) tool that translates terminal/CLI output into plain-language explanations in real time. Built with Python's Textual framework and pty for real shell integration. Distributed as a standalone executable via PyInstaller.
 
 ## Architecture
 
@@ -8,13 +8,15 @@ A split-pane TUI (Text User Interface) tool that translates terminal/CLI output 
 - **Real shell** spawned via `pty` + `os.fork()` — no copy-paste needed
 - **Two-tier translation**: local knowledge base first, AI (OpenAI) fallback second
 - **OpenAI integration** via Replit AI Integrations (no API key needed)
+- **Standalone executable** built with PyInstaller — no Python installation required for end users
 
 ## Key Files
 
 - `app.py` — Main Textual TUI application with shell integration, pty management, UI, welcome tutorial, starter commands, and help system
 - `translator.py` — Translation engine with local KB lookup and AI fallback (OpenAI GPT-5)
-- `knowledge_base.py` — Local knowledge base with 79 commands, 20+ error patterns, output patterns
+- `knowledge_base.py` — Local knowledge base with 79 commands, 20+ error patterns, output patterns; stores user KB at `~/.terminal-translator/knowledge_base.json` when running as executable
 - `terminal_knowledge_base.json` — User-editable JSON file (auto-generated on first run)
+- `build.py` — PyInstaller build script; produces standalone executable in `dist/`
 
 ## How It Works
 
@@ -38,6 +40,15 @@ A split-pane TUI (Text User Interface) tool that translates terminal/CLI output 
 - **79 commands** and **20+ error patterns** in local knowledge base
 - **Debounced translation** — waits for output to settle before translating
 - **Cross-platform** — works on macOS, Linux, Windows WSL
+- **Standalone executable** — download and run, no Python needed
+
+## Building the Executable
+
+```bash
+python build.py
+```
+
+Produces `dist/terminal-translator` (Linux/macOS) or `dist/terminal-translator.exe` (Windows). ~24 MB single file.
 
 ## In-App Commands
 
@@ -57,11 +68,18 @@ A split-pane TUI (Text User Interface) tool that translates terminal/CLI output 
 - `textual` — TUI framework
 - `pexpect` — Cross-platform pty utilities
 - `openai` — AI API client (via Replit AI Integrations)
+- `pyinstaller` — Build standalone executables (dev dependency)
 
 ## Running
 
+Development:
 ```bash
 python app.py
+```
+
+Standalone:
+```bash
+./dist/terminal-translator
 ```
 
 The app runs as a console TUI, not a web server.
