@@ -17,7 +17,7 @@ A split-pane TUI tool that translates terminal/CLI output into plain-language ex
 - `app.py` — Main Textual TUI application with shell integration, welcome tutorial, starter commands, help system, theme toggle
 - `themes.py` — Theme CSS definitions (Terminal + Glass), theme preference persistence to `~/.terminal-translator/preferences.json`
 - `translator.py` — Translation engine: local KB → Ollama → OpenAI fallback chain; auto-detects AI backends
-- `knowledge_base.py` — 79 commands, 20+ error patterns; stores user KB at `~/.terminal-translator/` when bundled
+- `knowledge_base.py` — 507 commands, 52 error patterns, 6 output patterns; stores user KB at `~/.terminal-translator/` when bundled
 - `terminal_knowledge_base.json` — User-editable JSON (auto-generated on first run)
 - `build.py` — PyInstaller build script with --lite and --full modes; creates macOS .app, Linux .desktop, Ollama setup scripts
 - `server.py` — Flask web server for the landing/download page
@@ -33,7 +33,7 @@ A split-pane TUI tool that translates terminal/CLI output into plain-language ex
 
 ## Translation Priority
 
-1. **Local knowledge base** (instant, always works, 79 commands + 20+ error patterns)
+1. **Local knowledge base** (instant, always works, 507 commands + 52 error patterns)
 2. **Ollama** (local AI via qwen2.5-coder:1.5b, free, private, no internet)
 3. **OpenAI cloud** (GPT-5 via Replit AI Integrations or OPENAI_API_KEY)
 
@@ -46,7 +46,7 @@ python build.py --full   # Full edition with Ollama setup scripts
 ```
 
 ### Lite Edition (~24 MB)
-- App executable with 79-command knowledge base
+- App executable with 507-command knowledge base
 - macOS .app bundle or Linux .desktop launcher
 - Works offline, no AI required
 
@@ -62,6 +62,8 @@ python build.py --full   # Full edition with Ollama setup scripts
 ## In-App Commands
 
 - `help` — Full help/instructions
+- `/git <url>` — Git Translator: analyze any GitHub repo (stars, forks, license, quality score)
+- `translate <command>` — Explain a command without running it
 - `try` — List 25 beginner-friendly starter commands
 - `try N` — Auto-run starter command N (1-25)
 

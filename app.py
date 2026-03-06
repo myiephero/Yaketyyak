@@ -7,6 +7,9 @@ import struct
 import fcntl
 import termios
 import threading
+import json
+import urllib.request
+from datetime import datetime, timezone
 from collections import deque
 
 from textual import work
@@ -75,6 +78,16 @@ automatically. No copy-paste needed!
   1. Type a command in the input box on the left and press Enter
   2. The command runs in a real shell
   3. An explanation appears on the right automatically
+
+[bold]Git Translator:[/]
+  Type [bold cyan]/git <url>[/] to analyze any GitHub repository
+  Example: [bold cyan]/git https://github.com/torvalds/linux[/]
+  Also works: [bold cyan]/git owner/repo[/]
+  Shows: stars, forks, language, license, quality score, and more
+
+[bold]Translate without running:[/]
+  Type [bold cyan]translate <command>[/] to explain a command without running it
+  Example: [bold cyan]translate git rebase -i HEAD~3[/]
 
 [bold]Quick-try commands:[/]
   Type [bold cyan]try[/] to see a list of beginner-friendly commands
@@ -245,7 +258,7 @@ class TerminalTranslator(App):
                     yield Label("SHELL", id="shell-title")
                     yield ShellOutput(id="shell-output", highlight=False, markup=False, wrap=True)
                     yield Input(
-                        placeholder="Type a command and press Enter (or type 'help')",
+                        placeholder="Type a command, /git <url>, or 'help'",
                         id="shell-input",
                     )
             with Container(id="translation-panel"):
@@ -314,7 +327,7 @@ class TerminalTranslator(App):
         trans.write("")
         trans.write("[bold]Get started:[/]")
         trans.write("  Type [bold cyan]try 1[/] to run your first command")
-        trans.write("  Type [bold cyan]try[/] to see all beginner commands")
+        trans.write("  Type [bold cyan]/git owner/repo[/] to analyze a GitHub repo")
         trans.write("  Type [bold cyan]help[/] for full instructions")
         trans.write("")
         trans.write("[bold]Try these yourself:[/]")
@@ -389,7 +402,225 @@ class TerminalTranslator(App):
                 trans.write(f"[yellow]No command #{num}. Type 'try' to see the list (1-{len(STARTER_COMMANDS)}).[/]")
                 return True
 
+        translate_match = re.match(r"^(?:/translate|translate)\s+(.+)$", cmd, re.IGNORECASE)
+        if translate_match:
+            text_to_translate = translate_match.group(1)
+            trans = self.query_one("#translation-output", RichLog)
+            trans.write("")
+            trans.write(f"[bold cyan]Translating:[/] {text_to_translate}")
+            self._do_translate(text_to_translate, self._translation_id + 1)
+            return True
+
+        git_match = re.match(r"^/git\s+(.+)$", cmd, re.IGNORECASE)
+        if git_match:
+            url_or_repo = git_match.group(1).strip()
+            self._analyze_github_repo(url_or_repo)
+            return True
+
         return False
+
+    def _parse_github_url(self, url_or_repo: str):
+        patterns = [
+            r"(?:https?://)?github\.com/([^/]+)/([^/\s#?]+)",
+            r"^([^/\s]+)/([^/\s]+)$",
+        ]
+        for pattern in patterns:
+            m = re.match(pattern, url_or_repo.strip().rstrip("/"))
+            if m:
+                owner = m.group(1)
+                repo = m.group(2).replace(".git", "")
+                return owner, repo
+        return None, None
+
+    def _calculate_quality_score(self, data):
+        score = 0
+        reasons = []
+
+        stars = data.get("stargazers_count", 0)
+        if stars >= 1000:
+            score += 25
+            reasons.append("High star count")
+        elif stars >= 100:
+            score += 15
+            reasons.append("Good star count")
+        elif stars >= 10:
+            score += 8
+            reasons.append("Some community interest")
+        else:
+            score += 2
+
+        if data.get("description"):
+            score += 10
+            reasons.append("Has description")
+
+        if data.get("license") and data["license"].get("spdx_id") != "NOASSERTION":
+            score += 10
+            reasons.append("Licensed")
+
+        if not data.get("archived", False):
+            score += 5
+            reasons.append("Active (not archived)")
+        else:
+            reasons.append("Archived")
+
+        updated = data.get("pushed_at", "")
+        if updated:
+            try:
+                last_push = datetime.fromisoformat(updated.replace("Z", "+00:00"))
+                days_ago = (datetime.now(timezone.utc) - last_push).days
+                if days_ago < 30:
+                    score += 15
+                    reasons.append("Updated within 30 days")
+                elif days_ago < 180:
+                    score += 10
+                    reasons.append("Updated within 6 months")
+                elif days_ago < 365:
+                    score += 5
+                    reasons.append("Updated within a year")
+                else:
+                    reasons.append(f"Last updated {days_ago} days ago")
+            except (ValueError, TypeError):
+                pass
+
+        forks = data.get("forks_count", 0)
+        if forks >= 100:
+            score += 10
+            reasons.append("Many forks")
+        elif forks >= 10:
+            score += 5
+            reasons.append("Some forks")
+
+        if not data.get("fork", False):
+            score += 5
+            reasons.append("Original repo (not a fork)")
+
+        if data.get("has_wiki"):
+            score += 3
+        if data.get("has_issues"):
+            score += 2
+
+        open_issues = data.get("open_issues_count", 0)
+        if open_issues > 500:
+            score -= 5
+            reasons.append("Many open issues")
+
+        score = max(0, min(score, 100))
+        return score, reasons
+
+    @work(thread=True)
+    def _analyze_github_repo(self, url_or_repo: str) -> None:
+        trans_out = self.query_one("#translation-output", RichLog)
+        status = self.query_one("#status-label", Label)
+        self.call_from_thread(status.update, "Analyzing repo...")
+        self.call_from_thread(trans_out.write, "")
+        self.call_from_thread(trans_out.write, "[bold magenta][Git Translator][/bold magenta]")
+        self.call_from_thread(trans_out.write, f"[dim]Analyzing: {url_or_repo}[/dim]")
+
+        owner, repo = self._parse_github_url(url_or_repo)
+        if not owner or not repo:
+            self.call_from_thread(trans_out.write, "")
+            self.call_from_thread(trans_out.write, "[red]Could not parse GitHub URL.[/red]")
+            self.call_from_thread(trans_out.write, "[dim]Usage: /git https://github.com/owner/repo[/dim]")
+            self.call_from_thread(trans_out.write, "[dim]   or: /git owner/repo[/dim]")
+            self.call_from_thread(trans_out.write, "[dim]" + "\u2500" * 50 + "[/dim]")
+            self.call_from_thread(status.update, "Ready")
+            return
+
+        try:
+            api_url = f"https://api.github.com/repos/{owner}/{repo}"
+            req = urllib.request.Request(api_url, headers={
+                "Accept": "application/vnd.github.v3+json",
+                "User-Agent": "TerminalTranslator/1.0",
+            })
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                data = json.loads(resp.read())
+        except urllib.error.HTTPError as e:
+            self.call_from_thread(trans_out.write, "")
+            if e.code == 404:
+                self.call_from_thread(trans_out.write, f"[red]Repository not found: {owner}/{repo}[/red]")
+                self.call_from_thread(trans_out.write, "[dim]Check the URL and make sure the repo exists and is public.[/dim]")
+            elif e.code == 403:
+                self.call_from_thread(trans_out.write, f"[red]GitHub API rate limit exceeded.[/red]")
+                self.call_from_thread(trans_out.write, "[dim]Try again in a few minutes.[/dim]")
+            else:
+                self.call_from_thread(trans_out.write, f"[red]GitHub API error: {e.code}[/red]")
+            self.call_from_thread(trans_out.write, "[dim]" + "\u2500" * 50 + "[/dim]")
+            self.call_from_thread(status.update, "Ready")
+            return
+        except Exception as e:
+            self.call_from_thread(trans_out.write, "")
+            self.call_from_thread(trans_out.write, f"[red]Network error: {str(e)}[/red]")
+            self.call_from_thread(trans_out.write, "[dim]Check your internet connection.[/dim]")
+            self.call_from_thread(trans_out.write, "[dim]" + "\u2500" * 50 + "[/dim]")
+            self.call_from_thread(status.update, "Ready")
+            return
+
+        score, reasons = self._calculate_quality_score(data)
+
+        name = data.get("full_name", f"{owner}/{repo}")
+        desc = data.get("description") or "No description"
+        stars = data.get("stargazers_count", 0)
+        forks = data.get("forks_count", 0)
+        watchers = data.get("subscribers_count", data.get("watchers_count", 0))
+        lang = data.get("language") or "Not specified"
+        license_info = data.get("license")
+        license_name = license_info.get("spdx_id", "Unknown") if license_info else "None"
+        created = data.get("created_at", "")[:10]
+        updated = data.get("pushed_at", "")[:10]
+        size_kb = data.get("size", 0)
+        default_branch = data.get("default_branch", "main")
+        is_fork = data.get("fork", False)
+        archived = data.get("archived", False)
+        open_issues = data.get("open_issues_count", 0)
+        topics = data.get("topics", [])
+        homepage = data.get("homepage") or ""
+
+        if score >= 75:
+            score_color = "green"
+            score_label = "Excellent"
+        elif score >= 50:
+            score_color = "cyan"
+            score_label = "Good"
+        elif score >= 30:
+            score_color = "yellow"
+            score_label = "Fair"
+        else:
+            score_color = "red"
+            score_label = "Low"
+
+        def w(text):
+            self.call_from_thread(trans_out.write, text)
+
+        w("")
+        w(f"[bold]{name}[/bold]")
+        w(f"[dim]{desc}[/dim]")
+        w("")
+        w(f"  [bold][{score_color}]Quality Score: {score}/100 ({score_label})[/{score_color}][/bold]")
+        w("")
+        w(f"  [yellow]\u2605[/yellow] Stars: [bold]{stars:,}[/bold]     \U0001f374 Forks: [bold]{forks:,}[/bold]     \U0001f441 Watchers: [bold]{watchers:,}[/bold]")
+        w(f"  \U0001f4bb Language: [bold]{lang}[/bold]     \U0001f4dc License: [bold]{license_name}[/bold]")
+        w(f"  \U0001f4c5 Created: {created}     \U0001f504 Last push: {updated}")
+        w(f"  \U0001f333 Default branch: {default_branch}     \U0001f4e6 Size: {size_kb:,} KB")
+        w(f"  \U0001f41b Open issues: {open_issues:,}")
+
+        flags = []
+        if is_fork:
+            flags.append("[yellow]Fork[/yellow]")
+        if archived:
+            flags.append("[red]Archived[/red]")
+        if flags:
+            w(f"  Flags: {' | '.join(flags)}")
+
+        if topics:
+            w(f"  Topics: [dim]{', '.join(topics[:8])}[/dim]")
+        if homepage:
+            w(f"  Homepage: [dim]{homepage}[/dim]")
+
+        w("")
+        w(f"  [dim]Score breakdown: {', '.join(reasons[:5])}[/dim]")
+        w(f"  [dim]{api_url.replace('api.github.com/repos', 'github.com')}[/dim]")
+        w("[dim]" + "\u2500" * 50 + "[/dim]")
+        self.call_from_thread(status.update, "Ready")
 
     def _on_shell_output(self, text: str) -> None:
         self.call_from_thread(self._handle_output, text)
