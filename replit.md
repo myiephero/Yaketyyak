@@ -62,6 +62,8 @@ python build.py --full   # Full edition with Ollama setup scripts
 ## In-App Commands
 
 - `help` — Full help/instructions
+- `/git <url>` — Git Translator: analyze any GitHub repo (stars, forks, license, quality score)
+- `translate <command>` — Explain a command without running it
 - `try` — List 25 beginner-friendly starter commands
 - `try N` — Auto-run starter command N (1-25)
 

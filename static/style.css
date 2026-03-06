@@ -408,6 +408,29 @@ nav {
     padding: 2px 7px; border-radius: 4px;
 }
 
+.privacy-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.p-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.92rem;
+    color: var(--text-2);
+    padding: 8px 14px;
+    background: var(--accent-dim);
+    border-radius: 8px;
+}
+
+.p-icon {
+    font-size: 1rem;
+    width: 24px;
+    text-align: center;
+}
+
 .mini-terminal {
     background: var(--bg); border: 1px solid var(--border);
     border-radius: var(--radius-sm); padding: 16px 20px;
@@ -416,19 +439,6 @@ nav {
 
 .mt-line { color: var(--text); }
 .mt-out { color: var(--text-2); }
-
-.privacy-stack {
-    display: flex; flex-direction: column; gap: 10px;
-}
-
-.p-row {
-    display: flex; align-items: center; gap: 10px;
-    font-size: 0.9rem; color: var(--text-2);
-    background: var(--bg-2); padding: 10px 16px;
-    border-radius: var(--radius-sm); border: 1px solid var(--border);
-}
-
-.p-icon { font-size: 1rem; }
 
 .steps-track {
     display: flex; align-items: flex-start; justify-content: center;
