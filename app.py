@@ -1,305 +1,463 @@
-import streamlit as st
-from knowledge_base import (
-    ensure_knowledge_base_exists,
-    save_knowledge_base,
-    local_lookup,
-    validate_regex,
+import asyncio
+import os
+import re
+import pty
+import signal
+import struct
+import fcntl
+import termios
+import threading
+from collections import deque
+
+from textual import work
+from textual.app import App, ComposeResult
+from textual.binding import Binding
+from textual.containers import Horizontal, Vertical, Container
+from textual.widgets import (
+    Header,
+    Footer,
+    Static,
+    RichLog,
+    Input,
+    Label,
+    Select,
 )
-from translator import (
-    translate_with_ai_stream,
-    LANGUAGE_NAMES,
-)
+from textual.reactive import reactive
+from textual.message import Message
 
-EXAMPLE_SNIPPETS = {
-    "Permission denied error": "bash: ./deploy.sh: Permission denied",
-    "Module not found (Python)": "Traceback (most recent call last):\n  File \"app.py\", line 1, in <module>\n    import flask\nModuleNotFoundError: No module named 'flask'",
-    "Git merge conflict": "Auto-merging src/index.js\nCONFLICT (content): Merge conflict in src/index.js\nAutomatic merge failed; fix conflicts and then commit the result.",
-    "Server started": "INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)\nINFO:     Started reloader process [28720]",
-    "Command not found": "zsh: command not found: nmp",
-    "Port in use": "Error: listen EADDRINUSE: address already in use :::3000\n    at Server.setupListenHandle [as _setupListenHandle] (net.js:1380:14)",
-    "npm install error": "npm ERR! code ERESOLVE\nnpm ERR! ERESOLVE unable to resolve dependency tree\nnpm ERR! Found: react@18.2.0\nnpm ERR! peer react@\"^17.0.0\" from react-beautiful-dnd@13.1.1",
-    "Successful build": "webpack 5.88.2 compiled successfully in 3456 ms\n\n  VITE v4.4.9  ready in 892 ms\n\n  ➜  Local:   http://localhost:5173/",
-    "Segmentation fault": "Segmentation fault (core dumped)",
-    "SSH connection refused": "ssh: connect to host 192.168.1.100 port 22: Connection refused",
-    "Python traceback": "Traceback (most recent call last):\n  File \"main.py\", line 42, in <module>\n    result = process_data(data)\n  File \"main.py\", line 28, in process_data\n    return data['users'][0]['name']\nKeyError: 'users'",
-    "Docker build output": "Step 1/8 : FROM node:18-alpine\n ---> 7e17a7c1234d\nStep 2/8 : WORKDIR /app\n ---> Using cache\n ---> 8f3a2b4c5d6e\nStep 3/8 : COPY package*.json ./\n ---> 9a0b1c2d3e4f\nSuccessfully built a1b2c3d4e5f6\nSuccessfully tagged myapp:latest",
-    "ls -la output": "total 48\ndrwxr-xr-x  12 user  staff   384 Mar  6 10:23 .\ndrwxr-xr-x   5 user  staff   160 Mar  1 09:00 ..\n-rw-r--r--   1 user  staff   220 Mar  6 10:23 .gitignore\n-rw-r--r--   1 user  staff  1234 Mar  6 10:23 package.json\ndrwxr-xr-x   8 user  staff   256 Mar  6 10:23 src",
-    "Test results": "FAIL src/components/Button.test.js\n  ● Button component › renders correctly\n    expect(received).toBe(expected)\n    Expected: \"Submit\"\n    Received: \"Click me\"\n\nTests: 3 passed, 1 failed, 4 total",
-    "SSL certificate error": "curl: (60) SSL certificate problem: certificate has expired\nMore details here: https://curl.se/docs/sslcerts.html",
-}
+from translator import translate, LANGUAGE_NAMES
+from knowledge_base import ensure_knowledge_base_exists
 
-st.set_page_config(
-    page_title="Terminal Translator",
-    page_icon="🖥️",
-    layout="wide",
-)
+ANSI_ESCAPE = re.compile(r"\x1b\[[0-9;]*[a-zA-Z]|\x1b\].*?\x07|\x1b\[.*?[@-~]|\r")
 
-if "history" not in st.session_state:
-    st.session_state.history = []
-if "mode" not in st.session_state:
-    st.session_state.mode = "beginner"
-if "language" not in st.session_state:
-    st.session_state.language = "en"
-if "use_ai" not in st.session_state:
-    st.session_state.use_ai = True
-if "kb" not in st.session_state:
-    st.session_state.kb = ensure_knowledge_base_exists()
-if "prev_example" not in st.session_state:
-    st.session_state.prev_example = "(paste your own)"
 
-with st.sidebar:
-    st.title("Settings")
+def strip_ansi(text):
+    return ANSI_ESCAPE.sub("", text)
 
-    st.subheader("Explanation Mode")
-    mode = st.radio(
-        "Choose your experience level:",
-        options=["beginner", "familiar"],
-        format_func=lambda x: {
-            "beginner": "Beginner — Detailed, assumes zero knowledge",
-            "familiar": "Familiar — Concise, assumes basic CLI concepts",
-        }[x],
-        index=0 if st.session_state.mode == "beginner" else 1,
-        key="mode_radio",
-    )
-    st.session_state.mode = mode
 
-    st.divider()
+class ShellProcess:
+    def __init__(self, on_output):
+        self.on_output = on_output
+        self.master_fd = None
+        self.pid = None
+        self.running = False
 
-    st.subheader("Language")
-    lang_options = list(LANGUAGE_NAMES.keys())
-    language = st.selectbox(
-        "Explanation language:",
-        options=lang_options,
-        format_func=lambda x: LANGUAGE_NAMES[x],
-        index=lang_options.index(st.session_state.language),
-        key="lang_select",
-    )
-    st.session_state.language = language
+    def start(self):
+        shell = os.environ.get("SHELL", "/bin/bash")
+        self.master_fd, slave_fd = pty.openpty()
 
-    st.divider()
-
-    st.subheader("Translation Source")
-    use_ai = st.toggle(
-        "Enable AI translations",
-        value=st.session_state.use_ai,
-        key="ai_toggle",
-        help="When enabled, uses AI for text not found in the local knowledge base. "
-        "Uses Replit AI Integrations (billed to your credits).",
-    )
-    st.session_state.use_ai = use_ai
-
-    st.divider()
-
-    st.subheader("Knowledge Base")
-    kb = st.session_state.kb
-    kb_stats = (
-        f"**{len(kb.get('commands', {}))}** commands, "
-        f"**{len(kb.get('error_patterns', {}))}** error patterns, "
-        f"**{len(kb.get('output_patterns', {}))}** output patterns"
-    )
-    st.markdown(kb_stats)
-
-    with st.expander("Add Custom Entry"):
-        entry_type = st.selectbox(
-            "Entry type:",
-            ["commands", "error_patterns", "output_patterns"],
-            format_func=lambda x: x.replace("_", " ").title(),
-        )
-        entry_key = st.text_input("Key/Name:")
-
-        if entry_type == "commands":
-            entry_beginner = st.text_area("Beginner explanation:")
-            entry_familiar = st.text_area("Familiar explanation:")
-            if st.button("Add Entry", use_container_width=True):
-                if entry_key and entry_beginner:
-                    kb.setdefault("commands", {})[entry_key] = {
-                        "beginner": entry_beginner,
-                        "familiar": entry_familiar or entry_beginner,
-                    }
-                    save_knowledge_base(kb)
-                    st.session_state.kb = kb
-                    st.success(f"Added command: {entry_key}")
-                else:
-                    st.error("Key and beginner explanation are required.")
+        self.pid = os.fork()
+        if self.pid == 0:
+            os.close(self.master_fd)
+            os.setsid()
+            os.dup2(slave_fd, 0)
+            os.dup2(slave_fd, 1)
+            os.dup2(slave_fd, 2)
+            if slave_fd > 2:
+                os.close(slave_fd)
+            env = os.environ.copy()
+            env["TERM"] = "dumb"
+            env["PS1"] = "$ "
+            env["PROMPT_COMMAND"] = ""
+            os.execvpe(shell, [shell, "--norc", "--noprofile"], env)
         else:
-            entry_pattern = st.text_input("Regex pattern:")
-            entry_beginner = st.text_area("Beginner explanation:")
-            entry_familiar = st.text_area("Familiar explanation:")
-            if st.button("Add Entry", use_container_width=True):
-                if entry_key and entry_pattern and entry_beginner:
-                    if not validate_regex(entry_pattern):
-                        st.error("Invalid regex pattern. Please check the syntax and try again.")
-                    else:
-                        kb.setdefault(entry_type, {})[entry_key] = {
-                            "pattern": entry_pattern,
-                            "beginner": entry_beginner,
-                            "familiar": entry_familiar or entry_beginner,
-                        }
-                        save_knowledge_base(kb)
-                        st.session_state.kb = kb
-                        st.success(f"Added {entry_type}: {entry_key}")
-                else:
-                    st.error("All fields are required.")
-
-    if st.button("Reload Knowledge Base", use_container_width=True):
-        st.session_state.kb = ensure_knowledge_base_exists()
-        st.success("Knowledge base reloaded.")
-
-    st.divider()
-
-    if st.button("Clear History", use_container_width=True):
-        st.session_state.history = []
-        st.rerun()
-
-st.title("Terminal Translator")
-st.markdown(
-    "Paste any terminal output, command, or error message and get a plain-language explanation."
-)
-
-col_input, col_output = st.columns([1, 1], gap="large")
-
-with col_input:
-    st.subheader("Terminal Input")
-
-    example = st.selectbox(
-        "Try an example:",
-        options=["(paste your own)"] + list(EXAMPLE_SNIPPETS.keys()),
-        index=0,
-        key="example_select",
-    )
-
-    if example != st.session_state.prev_example:
-        st.session_state.prev_example = example
-        if example != "(paste your own)":
-            st.session_state.terminal_input = EXAMPLE_SNIPPETS[example]
-        else:
-            st.session_state.terminal_input = ""
-
-    terminal_text = st.text_area(
-        "Paste terminal output here:",
-        height=250,
-        placeholder="$ npm run build\n\nnpm ERR! Missing script: \"build\"\nnpm ERR! \nnpm ERR! To see a list of scripts, run:\nnpm ERR!   npm run",
-        key="terminal_input",
-    )
-
-    col_btn1, col_btn2 = st.columns(2)
-    with col_btn1:
-        translate_btn = st.button(
-            "Translate",
-            type="primary",
-            use_container_width=True,
-            disabled=not terminal_text.strip(),
-        )
-    with col_btn2:
-        mode_label = "Beginner" if st.session_state.mode == "beginner" else "Familiar"
-        lang_label = LANGUAGE_NAMES[st.session_state.language]
-        st.markdown(
-            f"**Mode:** {mode_label} &nbsp;|&nbsp; **Lang:** {lang_label}"
-        )
-
-with col_output:
-    st.subheader("Translation")
-
-    if translate_btn and terminal_text.strip():
-        text = terminal_text.strip()
-        kb = st.session_state.kb
-        local_result = local_lookup(text, kb, st.session_state.mode)
-
-        if local_result:
-            source_badge = ":green[Local Knowledge Base]"
-            category = local_result["category"].replace("_", " ").title()
-
-            st.markdown(f"**Source:** {source_badge} &nbsp;|&nbsp; **Category:** {category}")
-            st.divider()
-            st.markdown(local_result["explanation"])
-
-            st.session_state.history.insert(0, {
-                "input": text[:100] + ("..." if len(text) > 100 else ""),
-                "source": "Local KB",
-                "category": category,
-                "mode": st.session_state.mode,
-                "explanation": local_result["explanation"],
-            })
-
-        elif st.session_state.use_ai:
-            source_badge = ":blue[AI (OpenAI)]"
-            st.markdown(f"**Source:** {source_badge}")
-            st.divider()
-
-            response_container = st.empty()
-            full_response = ""
-
-            try:
-                for chunk in translate_with_ai_stream(
-                    text,
-                    st.session_state.mode,
-                    st.session_state.language,
-                ):
-                    full_response += chunk
-                    response_container.markdown(full_response + "▌")
-
-                response_container.markdown(full_response)
-
-                st.session_state.history.insert(0, {
-                    "input": text[:100] + ("..." if len(text) > 100 else ""),
-                    "source": "AI",
-                    "category": "AI Analysis",
-                    "mode": st.session_state.mode,
-                    "explanation": full_response[:200] + ("..." if len(full_response) > 200 else ""),
-                })
-            except Exception as e:
-                error_msg = str(e)
-                if "FREE_CLOUD_BUDGET_EXCEEDED" in error_msg:
-                    st.error(
-                        "Your free cloud budget has been exceeded. "
-                        "Please upgrade your Replit plan to continue using AI translations."
-                    )
-                else:
-                    st.error(f"AI translation failed: {error_msg}")
-        else:
-            st.warning(
-                "No match found in the local knowledge base, and AI translation is disabled. "
-                "Enable AI translations in the sidebar or add this pattern to your knowledge base."
+            os.close(slave_fd)
+            self.running = True
+            self._reader_thread = threading.Thread(
+                target=self._read_output, daemon=True
             )
-    elif not translate_btn:
-        st.markdown(
-            "*Paste terminal text on the left and click **Translate** to get started.*"
+            self._reader_thread.start()
+
+    def _read_output(self):
+        while self.running:
+            try:
+                data = os.read(self.master_fd, 4096)
+                if not data:
+                    break
+                text = data.decode("utf-8", errors="replace")
+                self.on_output(text)
+            except OSError:
+                break
+        self.running = False
+
+    def write(self, data):
+        if self.master_fd is not None and self.running:
+            os.write(self.master_fd, data.encode("utf-8"))
+
+    def send_line(self, line):
+        self.write(line + "\n")
+
+    def resize(self, rows, cols):
+        if self.master_fd is not None:
+            winsize = struct.pack("HHHH", rows, cols, 0, 0)
+            try:
+                fcntl.ioctl(self.master_fd, termios.TIOCSWINSZ, winsize)
+            except OSError:
+                pass
+
+    def stop(self):
+        self.running = False
+        if self.master_fd is not None:
+            try:
+                os.close(self.master_fd)
+            except OSError:
+                pass
+            self.master_fd = None
+        if self.pid and self.pid > 0:
+            try:
+                os.kill(self.pid, signal.SIGTERM)
+            except OSError:
+                pass
+            for _ in range(10):
+                try:
+                    pid, _ = os.waitpid(self.pid, os.WNOHANG)
+                    if pid != 0:
+                        break
+                except ChildProcessError:
+                    break
+                import time
+                time.sleep(0.1)
+            else:
+                try:
+                    os.kill(self.pid, signal.SIGKILL)
+                    os.waitpid(self.pid, 0)
+                except (OSError, ChildProcessError):
+                    pass
+            self.pid = None
+
+
+class TranslationPanel(Static):
+    pass
+
+
+class ShellOutput(RichLog):
+    pass
+
+
+class OutputReceived(Message):
+    def __init__(self, text: str) -> None:
+        self.text = text
+        super().__init__()
+
+
+class TerminalTranslator(App):
+    CSS = """
+    Screen {
+        layout: vertical;
+    }
+
+    #main-container {
+        layout: horizontal;
+        height: 1fr;
+    }
+
+    #shell-panel {
+        width: 1fr;
+        border: solid $accent;
+        height: 100%;
+    }
+
+    #shell-panel-inner {
+        height: 1fr;
+    }
+
+    #shell-title {
+        dock: top;
+        height: 1;
+        background: $accent;
+        color: $text;
+        text-align: center;
+        text-style: bold;
+        padding: 0 1;
+    }
+
+    #shell-output {
+        height: 1fr;
+        scrollbar-size: 1 1;
+    }
+
+    #shell-input {
+        dock: bottom;
+        height: 3;
+    }
+
+    #translation-panel {
+        width: 1fr;
+        border: solid $success;
+        height: 100%;
+    }
+
+    #translation-panel-inner {
+        height: 1fr;
+    }
+
+    #translation-title {
+        dock: top;
+        height: 1;
+        background: $success;
+        color: $text;
+        text-align: center;
+        text-style: bold;
+        padding: 0 1;
+    }
+
+    #translation-output {
+        height: 1fr;
+        scrollbar-size: 1 1;
+        padding: 0 1;
+    }
+
+    #settings-bar {
+        dock: bottom;
+        height: 3;
+        layout: horizontal;
+        background: $surface;
+        padding: 0 1;
+    }
+
+    #settings-bar Label {
+        padding: 1 1 0 0;
+        width: auto;
+    }
+
+    #mode-select {
+        width: 24;
+    }
+
+    #lang-select {
+        width: 20;
+    }
+
+    #ai-label {
+        padding: 1 1 0 2;
+    }
+
+    #status-label {
+        padding: 1 1 0 2;
+        color: $text-muted;
+        width: 1fr;
+        text-align: right;
+    }
+    """
+
+    TITLE = "Terminal Translator"
+    SUB_TITLE = "Type commands in the shell \u2014 get plain-language explanations"
+
+    BINDINGS = [
+        Binding("ctrl+b", "toggle_mode", "Toggle Beginner/Familiar"),
+        Binding("ctrl+t", "toggle_ai", "Toggle AI"),
+        Binding("ctrl+q", "quit", "Quit"),
+    ]
+
+    mode = reactive("beginner")
+    use_ai = reactive(True)
+    language = reactive("en")
+
+    def __init__(self):
+        super().__init__()
+        self.shell = None
+        self.output_buffer = deque(maxlen=100)
+        self._debounce_task = None
+        self._last_command = ""
+        self._pending_lines = []
+        self._translation_id = 0
+
+    def compose(self) -> ComposeResult:
+        yield Header()
+        with Horizontal(id="main-container"):
+            with Container(id="shell-panel"):
+                with Vertical(id="shell-panel-inner"):
+                    yield Label("SHELL", id="shell-title")
+                    yield ShellOutput(id="shell-output", highlight=False, markup=False, wrap=True)
+                    yield Input(
+                        placeholder="Type your command here and press Enter...",
+                        id="shell-input",
+                    )
+            with Container(id="translation-panel"):
+                with Vertical(id="translation-panel-inner"):
+                    yield Label("TRANSLATION", id="translation-title")
+                    yield RichLog(
+                        id="translation-output", highlight=False, markup=True, wrap=True
+                    )
+
+        with Horizontal(id="settings-bar"):
+            yield Label("Mode:")
+            yield Select(
+                [
+                    ("Beginner", "beginner"),
+                    ("Familiar", "familiar"),
+                ],
+                value="beginner",
+                id="mode-select",
+                allow_blank=False,
+            )
+            yield Label("Lang:")
+            yield Select(
+                [(name, code) for code, name in LANGUAGE_NAMES.items()],
+                value="en",
+                id="lang-select",
+                allow_blank=False,
+            )
+            yield Label("AI: ON", id="ai-label")
+            yield Label("Ready", id="status-label")
+
+        yield Footer()
+
+    def on_mount(self) -> None:
+        self.kb = ensure_knowledge_base_exists()
+        self.shell = ShellProcess(on_output=self._on_shell_output)
+        self.shell.start()
+        shell_input = self.query_one("#shell-input", Input)
+        shell_input.focus()
+
+        trans = self.query_one("#translation-output", RichLog)
+        trans.write("[bold green]Welcome to Terminal Translator![/]\n")
+        trans.write("Type commands in the shell on the left.\n")
+        trans.write("Explanations will appear here automatically.\n\n")
+        trans.write("[dim]Ctrl+B: Toggle Beginner/Familiar mode[/]\n")
+        trans.write("[dim]Ctrl+T: Toggle AI on/off[/]\n")
+        trans.write("[dim]Ctrl+Q: Quit[/]\n")
+
+    def _on_shell_output(self, text: str) -> None:
+        self.call_from_thread(self._handle_output, text)
+
+    def _handle_output(self, text: str) -> None:
+        shell_out = self.query_one("#shell-output", ShellOutput)
+        clean = strip_ansi(text)
+        for line in clean.split("\n"):
+            stripped = line.rstrip()
+            if stripped:
+                shell_out.write(stripped)
+                self._pending_lines.append(stripped)
+
+        if self._debounce_task is not None:
+            self._debounce_task.cancel()
+        self._debounce_task = asyncio.get_event_loop().call_later(
+            0.8, self._trigger_translation
         )
 
-st.divider()
+    def _normalize_for_translation(self, lines):
+        prompt_re = re.compile(r"^\$\s*")
+        normalized = []
+        for line in lines:
+            stripped = line.strip()
+            if not stripped or stripped == "$":
+                continue
+            cleaned = prompt_re.sub("", stripped)
+            if cleaned:
+                normalized.append(cleaned)
+        return normalized
 
-if st.session_state.history:
-    st.subheader("Recent Translations")
-    for i, entry in enumerate(st.session_state.history[:10]):
-        with st.expander(
-            f"`{entry['input']}` — {entry['source']} ({entry['mode'].title()})",
-            expanded=False,
-        ):
-            st.markdown(entry["explanation"])
+    def _trigger_translation(self) -> None:
+        if not self._pending_lines:
+            return
 
-st.divider()
+        lines = list(self._pending_lines)
+        self._pending_lines.clear()
 
-with st.expander("About Terminal Translator"):
-    st.markdown(
-        """
-**Terminal Translator** is like Google Translate for your command line. It takes confusing 
-terminal output \u2014 commands, errors, status messages \u2014 and explains them in plain language.
+        normalized = self._normalize_for_translation(lines)
+        if not normalized:
+            return
 
-**How it works:**
+        combined = "\n".join(normalized)
 
-1. **Paste** any terminal text into the input area
-2. The tool first checks a **local knowledge base** of common commands and error patterns
-3. If no match is found, it uses **AI** to provide a detailed explanation
-4. Choose between **Beginner** (very detailed) and **Familiar** (concise) modes
+        if combined == self._last_command:
+            return
 
-**Features:**
-- Built-in knowledge base with 30+ commands and 20+ error patterns
-- AI-powered explanations for anything not in the knowledge base
-- 8 languages supported for AI translations
-- Customizable knowledge base \u2014 add your own entries
-- Translation history for easy reference
+        self._translation_id += 1
+        self._do_translate(combined, self._translation_id)
 
-**Cross-platform:** Works anywhere you can open a browser. Designed for macOS, Linux, 
-and Windows users alike.
-"""
-    )
+    @work(thread=True, exclusive=True)
+    def _do_translate(self, text: str, tid: int = 0) -> None:
+        status = self.query_one("#status-label", Label)
+        self.call_from_thread(status.update, "Translating...")
+
+        result = translate(
+            text,
+            mode=self.mode,
+            language=self.language,
+            use_ai=self.use_ai,
+        )
+
+        if tid != self._translation_id:
+            self.call_from_thread(status.update, "Ready")
+            return
+
+        explanation = result.get("explanation", "")
+        source = result.get("source", "")
+        category = result.get("category", "")
+
+        if source == "local_db":
+            source_tag = "[green][Local KB][/green]"
+        elif source == "ai":
+            source_tag = "[blue][AI][/blue]"
+        elif source == "error":
+            source_tag = "[red][Error][/red]"
+        else:
+            source_tag = "[dim][No match][/dim]"
+
+        preview = text[:80].replace("\n", " ")
+        if len(text) > 80:
+            preview += "..."
+
+        trans_out = self.query_one("#translation-output", RichLog)
+        self.call_from_thread(
+            self._write_translation, trans_out, source_tag, category, preview, explanation
+        )
+        self.call_from_thread(status.update, "Ready")
+
+    def _write_translation(self, trans_out, source_tag, category, preview, explanation):
+        trans_out.write("")
+        trans_out.write(f"{source_tag} [dim]{category}[/dim]")
+        trans_out.write(f"[bold]> {preview}[/bold]")
+        trans_out.write("")
+        for line in explanation.split("\n"):
+            trans_out.write(line)
+        trans_out.write("[dim]" + "\u2500" * 50 + "[/dim]")
+
+    def on_input_submitted(self, event: Input.Submitted) -> None:
+        if event.input.id == "shell-input":
+            command = event.value
+            event.input.clear()
+
+            if self.shell and self.shell.running:
+                self._last_command = command
+                self.shell.send_line(command)
+
+    def on_select_changed(self, event: Select.Changed) -> None:
+        if event.select.id == "mode-select":
+            self.mode = event.value
+        elif event.select.id == "lang-select":
+            self.language = event.value
+
+    def action_toggle_mode(self) -> None:
+        mode_select = self.query_one("#mode-select", Select)
+        if self.mode == "beginner":
+            self.mode = "familiar"
+            mode_select.value = "familiar"
+        else:
+            self.mode = "beginner"
+            mode_select.value = "beginner"
+        status = self.query_one("#status-label", Label)
+        status.update(f"Mode: {self.mode.title()}")
+
+    def action_toggle_ai(self) -> None:
+        self.use_ai = not self.use_ai
+        ai_label = self.query_one("#ai-label", Label)
+        ai_label.update(f"AI: {'ON' if self.use_ai else 'OFF'}")
+        status = self.query_one("#status-label", Label)
+        status.update(f"AI {'enabled' if self.use_ai else 'disabled'}")
+
+    def on_unmount(self) -> None:
+        if self.shell:
+            self.shell.stop()
+
+    def action_quit(self) -> None:
+        if self.shell:
+            self.shell.stop()
+        self.exit()
+
+
+if __name__ == "__main__":
+    app = TerminalTranslator()
+    app.run()

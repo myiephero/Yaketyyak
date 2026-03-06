@@ -1,33 +1,56 @@
 # Terminal Translator
 
-A web-based tool that translates terminal/CLI output into plain-language explanations, designed for new coders and "vibe coders" who find terminal output intimidating.
+A split-pane TUI (Text User Interface) tool that translates terminal/CLI output into plain-language explanations in real time. Built with Python's Textual framework and pty for real shell integration.
 
 ## Architecture
 
-- **Streamlit web app** on port 5000
-- **Two-tier translation engine**: local knowledge base first, AI fallback second
+- **Textual TUI** with split-pane layout (shell left, translations right)
+- **Real shell** spawned via `pty` + `os.fork()` — no copy-paste needed
+- **Two-tier translation**: local knowledge base first, AI (OpenAI) fallback second
 - **OpenAI integration** via Replit AI Integrations (no API key needed)
 
 ## Key Files
 
-- `app.py` — Main Streamlit application with UI, input handling, and translation display
-- `translator.py` — Translation engine with AI integration (OpenAI GPT-5 via Replit AI Integrations)
-- `knowledge_base.py` — Local knowledge base with 30+ commands, 20+ error patterns, output patterns
+- `app.py` — Main Textual TUI application with shell integration, pty management, and UI
+- `translator.py` — Translation engine with local KB lookup and AI fallback (OpenAI GPT-5)
+- `knowledge_base.py` — Local knowledge base with 40+ commands, 20+ error patterns, output patterns
 - `terminal_knowledge_base.json` — User-editable JSON file (auto-generated on first run)
-- `.streamlit/config.toml` — Streamlit server configuration
+
+## How It Works
+
+1. User types commands in the left shell pane (real bash shell via pty)
+2. Shell output is captured in real-time and displayed
+3. Output is debounced (0.8s) then sent to the translation engine
+4. Local KB is checked first for instant matches; AI is used as fallback
+5. Translation appears in the right pane automatically
 
 ## Features
 
-- **Beginner / Familiar modes** — Toggle explanation depth
-- **Local knowledge base** — Instant pattern matching for common commands/errors
-- **AI fallback** — OpenAI-powered explanations for unknown terminal text
-- **8 languages** — EN, ES, FR, DE, ZH, JA, PT, KO
-- **Streaming AI responses** — Real-time token display
-- **Custom entries** — Users can add their own patterns to the knowledge base
-- **Example snippets** — 15 pre-built examples to try
-- **Translation history** — Last 10 translations tracked in session
+- **Split-pane TUI**: Real shell on left, live translations on right
+- **No copy-paste**: Commands run in a real shell, output captured automatically via pty
+- **Beginner / Familiar modes** (Ctrl+B to toggle)
+- **AI toggle** (Ctrl+T) — disable AI for offline/local-only use
+- **8 languages** for AI translations: EN, ES, FR, DE, ZH, JA, PT, KO
+- **40+ commands** and **20+ error patterns** in local knowledge base
+- **Debounced translation** — waits for output to settle before translating
+- **Cross-platform** — works on macOS, Linux, Windows WSL
+
+## Keyboard Shortcuts
+
+- **Ctrl+B**: Toggle Beginner/Familiar mode
+- **Ctrl+T**: Toggle AI on/off
+- **Ctrl+Q**: Quit
 
 ## Dependencies
 
-- `streamlit` — Web UI framework
-- `openai` — AI API client (via Replit AI Integrations, no API key required)
+- `textual` — TUI framework
+- `pexpect` — Cross-platform pty utilities
+- `openai` — AI API client (via Replit AI Integrations)
+
+## Running
+
+```bash
+python app.py
+```
+
+The app runs as a console TUI, not a web server.
