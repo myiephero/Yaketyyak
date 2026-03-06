@@ -46,9 +46,9 @@ dev = [
 termtranslate = "terminal_translator.main:main"
 
 [project.urls]
-Homepage = "https://termtranslator.dev"
-Repository = "https://github.com/yourusername/terminal-translator"
-Documentation = "https://github.com/yourusername/terminal-translator#readme"
+Homepage = "https://github.com/myiephero/yakkityyak"
+Repository = "https://github.com/myiephero/yakkityyak"
+Documentation = "https://github.com/myiephero/yakkityyak#readme"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/terminal_translator"]

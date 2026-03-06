@@ -14,9 +14,9 @@ A "Google Translate for your Terminal" - a split-pane TUI that shows real-time p
 
 ### Download (Recommended for beginners)
 
-Visit [termtranslator.dev](https://termtranslator.dev) and download for your operating system:
+Download from [GitHub Releases](https://github.com/myiephero/yakkityyak/releases/latest):
 
-- **macOS**: `TerminalTranslator-macos.dmg`
+- **macOS**: `TerminalTranslator-macos`
 - **Windows**: `TerminalTranslator-windows.exe`
 - **Linux**: `TerminalTranslator-linux`
 
@@ -47,8 +47,8 @@ Launch the app and start typing commands. The right pane automatically shows exp
 
 ```bash
 # Clone the repo
-git clone https://github.com/yourusername/terminal-translator.git
-cd terminal-translator
+git clone https://github.com/myiephero/yakkityyak.git
+cd yakkityyak
 
 # Install dependencies
 pip install -e ".[dev]"

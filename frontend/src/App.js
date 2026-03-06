@@ -63,9 +63,9 @@ const features = [
 ];
 
 const downloadLinks = {
-  macos: "https://github.com/yourusername/terminal-translator/releases/latest/download/TerminalTranslator-macos",
-  windows: "https://github.com/yourusername/terminal-translator/releases/latest/download/TerminalTranslator-windows.exe",
-  linux: "https://github.com/yourusername/terminal-translator/releases/latest/download/TerminalTranslator-linux"
+  macos: "https://github.com/myiephero/yakkityyak/releases/latest/download/TerminalTranslator-macos",
+  windows: "https://github.com/myiephero/yakkityyak/releases/latest/download/TerminalTranslator-windows.exe",
+  linux: "https://github.com/myiephero/yakkityyak/releases/latest/download/TerminalTranslator-linux"
 };
 
 const osLabels = {
@@ -128,7 +128,7 @@ const LandingPage = () => {
             </div>
             
             <a 
-              href="https://github.com/yourusername/terminal-translator"
+              href="https://github.com/myiephero/yakkityyak"
               className="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface/50 border border-white/10 text-slate-300 hover:text-white transition-colors"
               data-testid="github-link"
             >
@@ -291,7 +291,7 @@ const LandingPage = () => {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <DownloadButton os={detectedOS} primary />
             <a 
-              href="https://github.com/yourusername/terminal-translator"
+              href="https://github.com/myiephero/yakkityyak"
               className="flex items-center gap-2 px-6 py-4 rounded-xl font-medium bg-surface border border-white/10 text-slate-200 hover:bg-surface-highlight transition-colors"
             >
               <Github className="w-5 h-5" />
