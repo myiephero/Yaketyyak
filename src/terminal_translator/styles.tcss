@@ -1,0 +1,109 @@
+/* Terminal Translator - Textual CSS Styles */
+
+/* Root app styling */
+Screen {
+    background: $surface;
+}
+
+/* Main container - horizontal split */
+#main-container {
+    width: 100%;
+    height: 100%;
+}
+
+/* Terminal pane (left side) */
+#terminal-pane {
+    width: 1fr;
+    min-width: 40;
+    height: 100%;
+    border: solid $primary;
+    background: $surface-darken-2;
+}
+
+/* Translation pane (right side) */
+#translation-pane {
+    width: 1fr;
+    min-width: 30;
+    height: 100%;
+    border: solid $success;
+    background: $surface-darken-1;
+    padding: 1;
+}
+
+/* Shell output area */
+#shell-output {
+    height: 1fr;
+    background: #0a0a0f;
+    color: #4ade80;
+    padding: 1;
+    border: none;
+    scrollbar-gutter: stable;
+}
+
+/* Command input */
+#command-input {
+    dock: bottom;
+    height: 3;
+    background: #1a1a2e;
+    color: #4ade80;
+    border: tall $primary;
+    padding: 0 1;
+}
+
+#command-input:focus {
+    border: tall $primary-lighten-2;
+}
+
+#command-input > .input--placeholder {
+    color: $text-muted;
+}
+
+/* Mode indicator */
+#mode-indicator {
+    height: 3;
+    content-align: center middle;
+    text-style: bold;
+    margin-bottom: 1;
+}
+
+/* Translation output */
+#translation-output {
+    height: 1fr;
+    background: $surface;
+    color: $text;
+    padding: 1 2;
+    border: round $success-darken-2;
+    overflow-y: auto;
+}
+
+/* Stats bar at bottom of translation pane */
+.stats-bar {
+    dock: bottom;
+    height: 1;
+    content-align: center middle;
+    color: $text-muted;
+}
+
+/* Header customization */
+Header {
+    background: $primary-darken-2;
+}
+
+Header > .header--tall {
+    color: $text;
+}
+
+/* Footer customization */
+Footer {
+    background: $surface-darken-2;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+    width: 1;
+    background: $surface-darken-1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: $primary-darken-1;
+}
