@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Terminal Translator
+Comment=Learn the terminal with real-time command explanations
+Exec=terminal-translator
+Terminal=true
+Type=Application
+Categories=Development;Education;
+Keywords=terminal;cli;learn;translate;command;
+StartupNotify=false
