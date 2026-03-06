@@ -25,7 +25,7 @@ from textual.widgets import (
 from textual.reactive import reactive
 from textual.message import Message
 
-from translator import translate, LANGUAGE_NAMES, AI_AVAILABLE
+from translator import translate, LANGUAGE_NAMES, AI_AVAILABLE, get_ai_status
 from knowledge_base import ensure_knowledge_base_exists
 
 ANSI_ESCAPE = re.compile(r"\x1b\[[0-9;]*[a-zA-Z]|\x1b\].*?\x07|\x1b\[.*?[@-~]|\r")
@@ -367,15 +367,22 @@ class TerminalTranslator(App):
 
     def on_mount(self) -> None:
         self.kb = ensure_knowledge_base_exists()
+        ai_status, ai_desc = get_ai_status()
         if not AI_AVAILABLE:
             self.use_ai = False
         self.shell = ShellProcess(on_output=self._on_shell_output)
         self.shell.start()
         shell_input = self.query_one("#shell-input", Input)
         shell_input.focus()
+        ai_label = self.query_one("#ai-label", Label)
         if not AI_AVAILABLE:
-            ai_label = self.query_one("#ai-label", Label)
             ai_label.update("AI: OFF")
+        elif ai_status == "ollama_ready":
+            ai_label.update("AI: Ollama")
+        else:
+            ai_label.update("AI: ON")
+        self._ai_status = ai_status
+        self._ai_desc = ai_desc
         self._show_welcome()
 
     def _show_welcome(self) -> None:
@@ -400,9 +407,17 @@ class TerminalTranslator(App):
         trans.write("[dim]Ctrl+B: Mode  |  Ctrl+T: AI  |  Ctrl+L: Clear  |  Ctrl+Q: Quit[/]")
         if not AI_AVAILABLE:
             trans.write("")
-            trans.write("[yellow]AI is off \u2014 no API key detected.[/]")
-            trans.write("[dim]Set OPENAI_API_KEY to enable AI translations.[/]")
+            trans.write("[yellow]AI is off \u2014 no AI backend detected.[/]")
+            trans.write("[dim]Install Ollama + qwen2.5-coder for free local AI,[/]")
+            trans.write("[dim]or set OPENAI_API_KEY for cloud AI.[/]")
             trans.write("[dim]The built-in knowledge base (79 commands) works without AI![/]")
+        elif hasattr(self, '_ai_status') and self._ai_status == "ollama_ready":
+            trans.write("")
+            trans.write(f"[green]AI powered by Ollama (local, private, free)[/]")
+        elif hasattr(self, '_ai_status') and self._ai_status == "ollama_no_model":
+            trans.write("")
+            trans.write(f"[yellow]Ollama is running but model not installed.[/]")
+            trans.write(f"[dim]Run: ollama pull qwen2.5-coder:1.5b[/]")
         trans.write("[dim]" + "\u2500" * 50 + "[/]")
         self._shown_welcome = True
 
@@ -527,8 +542,10 @@ class TerminalTranslator(App):
 
         if source == "local_db":
             source_tag = "[green][Local KB][/green]"
+        elif source == "ai" and category == "ollama":
+            source_tag = "[cyan][Ollama AI][/cyan]"
         elif source == "ai":
-            source_tag = "[blue][AI][/blue]"
+            source_tag = "[blue][Cloud AI][/blue]"
         elif source == "error":
             source_tag = "[red][Error][/red]"
         else:

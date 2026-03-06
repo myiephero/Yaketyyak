@@ -19,18 +19,19 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Start application"
+args = "Landing Page"
 
 [[workflows.workflow]]
-name = "Start application"
+name = "Landing Page"
 author = "agent"
 
 [workflows.workflow.metadata]
-outputType = "console"
+outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python app.py"
+args = "python server.py"
+waitForPort = 5000
 
 [[ports]]
 localPort = 5000

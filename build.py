@@ -6,60 +6,32 @@ import os
 import shutil
 import stat
 import plistlib
+import argparse
 
 
 APP_NAME = "Terminal Translator"
 EXECUTABLE_NAME = "terminal-translator"
 BUNDLE_ID = "com.terminaltranslator.app"
 VERSION = "1.0.0"
+OLLAMA_MODEL = "qwen2.5-coder:1.5b"
 
 HIDDEN_IMPORTS = [
-    "textual",
-    "textual.app",
-    "textual.widgets",
-    "textual.containers",
-    "textual.binding",
-    "textual.reactive",
-    "textual.message",
-    "textual._xterm_parser",
-    "textual.css",
-    "textual.css.query",
-    "textual.css.stylesheet",
-    "textual.dom",
-    "textual.screen",
-    "textual.widget",
-    "textual.driver",
-    "textual.drivers",
-    "textual.drivers.linux_driver",
-    "textual._linux_driver",
-    "textual._animator",
-    "textual._timer",
-    "textual._worker_manager",
-    "textual.worker",
-    "textual.events",
-    "textual.geometry",
-    "textual.strip",
-    "textual.renderables",
-    "textual.renderables.gradient",
-    "textual.widgets._header",
-    "textual.widgets._footer",
-    "textual.widgets._static",
-    "textual.widgets._input",
-    "textual.widgets._label",
-    "textual.widgets._select",
+    "textual", "textual.app", "textual.widgets", "textual.containers",
+    "textual.binding", "textual.reactive", "textual.message",
+    "textual._xterm_parser", "textual.css", "textual.css.query",
+    "textual.css.stylesheet", "textual.dom", "textual.screen",
+    "textual.widget", "textual.driver", "textual.drivers",
+    "textual.drivers.linux_driver", "textual._linux_driver",
+    "textual._animator", "textual._timer", "textual._worker_manager",
+    "textual.worker", "textual.events", "textual.geometry",
+    "textual.strip", "textual.renderables", "textual.renderables.gradient",
+    "textual.widgets._header", "textual.widgets._footer",
+    "textual.widgets._static", "textual.widgets._input",
+    "textual.widgets._label", "textual.widgets._select",
     "textual.widgets._rich_log",
-    "rich",
-    "rich.text",
-    "rich.console",
-    "rich.markup",
-    "rich.segment",
-    "rich.style",
-    "rich.color",
-    "rich.terminal_theme",
-    "openai",
-    "pexpect",
-    "translator",
-    "knowledge_base",
+    "rich", "rich.text", "rich.console", "rich.markup",
+    "rich.segment", "rich.style", "rich.color", "rich.terminal_theme",
+    "openai", "pexpect", "translator", "knowledge_base",
 ]
 
 
@@ -75,28 +47,20 @@ def build_executable():
 
     cmd = [
         sys.executable, "-m", "PyInstaller",
-        "--onefile",
-        "--name", EXECUTABLE_NAME,
-        "--console",
-        "--clean",
-        "--noconfirm",
-        "app.py",
+        "--onefile", "--name", EXECUTABLE_NAME,
+        "--console", "--clean", "--noconfirm", "app.py",
     ]
 
     for imp in HIDDEN_IMPORTS:
         cmd.extend(["--hidden-import", imp])
 
-    textual_path = None
     try:
         import textual as _t
-        textual_path = os.path.dirname(_t.__file__)
-    except ImportError:
-        pass
-
-    if textual_path:
-        css_dir = os.path.join(textual_path, "css")
+        css_dir = os.path.join(os.path.dirname(_t.__file__), "css")
         if os.path.isdir(css_dir):
             cmd.extend(["--add-data", f"{css_dir}{os.pathsep}textual/css"])
+    except ImportError:
+        pass
 
     print("Compiling executable...")
     result = subprocess.run(cmd, capture_output=True, text=True)
@@ -163,13 +127,10 @@ fi
         "NSHumanReadableCopyright": f"Terminal Translator {VERSION}",
     }
 
-    plist_path = os.path.join(contents_dir, "Info.plist")
-    with open(plist_path, "wb") as f:
+    with open(os.path.join(contents_dir, "Info.plist"), "wb") as f:
         plistlib.dump(info_plist, f)
 
     print(f"macOS app bundle created: {app_dir}")
-    print(f"  To install: drag '{APP_NAME}.app' to your Applications folder")
-    print(f"  To run: double-click '{APP_NAME}' in Applications")
     return app_dir
 
 
@@ -185,10 +146,10 @@ def create_linux_launcher(exe_path):
 
     os.makedirs(bin_dir)
     os.makedirs(apps_dir)
-
     shutil.copy2(exe_path, os.path.join(bin_dir, EXECUTABLE_NAME))
 
-    desktop_entry = f"""[Desktop Entry]
+    with open(os.path.join(apps_dir, f"{EXECUTABLE_NAME}.desktop"), "w") as f:
+        f.write(f"""[Desktop Entry]
 Name={APP_NAME}
 Comment=Learn the terminal with real-time command explanations
 Exec={EXECUTABLE_NAME}
@@ -197,13 +158,10 @@ Type=Application
 Categories=Development;Education;
 Keywords=terminal;cli;learn;translate;command;
 StartupNotify=false
-"""
-    desktop_path = os.path.join(apps_dir, f"{EXECUTABLE_NAME}.desktop")
-    with open(desktop_path, "w") as f:
-        f.write(desktop_entry)
+""")
 
-    install_script_path = os.path.join(launcher_dir, "install.sh")
-    with open(install_script_path, "w") as f:
+    install_path = os.path.join(launcher_dir, "install.sh")
+    with open(install_path, "w") as f:
         f.write(f"""#!/bin/bash
 set -e
 
@@ -221,19 +179,17 @@ mkdir -p "$APPS_DIR"
 cp "$SCRIPT_DIR/bin/{EXECUTABLE_NAME}" "$BIN_DIR/{EXECUTABLE_NAME}"
 chmod +x "$BIN_DIR/{EXECUTABLE_NAME}"
 
-cat > "$APPS_DIR/{EXECUTABLE_NAME}.desktop" << 'DESKTOP'
+cat > "$APPS_DIR/{EXECUTABLE_NAME}.desktop" << DESKTOP
 [Desktop Entry]
 Name={APP_NAME}
 Comment=Learn the terminal with real-time command explanations
-Exec=$HOME/.local/bin/{EXECUTABLE_NAME}
+Exec=$BIN_DIR/{EXECUTABLE_NAME}
 Terminal=true
 Type=Application
 Categories=Development;Education;
 Keywords=terminal;cli;learn;translate;command;
 StartupNotify=false
 DESKTOP
-
-sed -i "s|\\$HOME|$HOME|g" "$APPS_DIR/{EXECUTABLE_NAME}.desktop"
 
 echo "Installed successfully!"
 echo ""
@@ -244,7 +200,7 @@ echo ""
 
 if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
     echo "Note: Add $BIN_DIR to your PATH if the command isn't found:"
-    echo "  echo 'export PATH=\\\"$BIN_DIR:\\$PATH\\\"' >> ~/.bashrc"
+    echo "  echo 'export PATH=\\"$BIN_DIR:\\$PATH\\"' >> ~/.bashrc"
     echo ""
 fi
 
@@ -252,10 +208,10 @@ if command -v update-desktop-database &> /dev/null; then
     update-desktop-database "$APPS_DIR" 2>/dev/null || true
 fi
 """)
-    os.chmod(install_script_path, stat.S_IRWXU | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
+    _make_executable(install_path)
 
-    uninstall_script_path = os.path.join(launcher_dir, "uninstall.sh")
-    with open(uninstall_script_path, "w") as f:
+    uninstall_path = os.path.join(launcher_dir, "uninstall.sh")
+    with open(uninstall_path, "w") as f:
         f.write(f"""#!/bin/bash
 echo "Uninstalling {APP_NAME}..."
 
@@ -263,20 +219,136 @@ rm -f "$HOME/.local/bin/{EXECUTABLE_NAME}"
 rm -f "$HOME/.local/share/applications/{EXECUTABLE_NAME}.desktop"
 rm -rf "$HOME/.terminal-translator"
 
+if command -v update-desktop-database &> /dev/null; then
+    update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
+fi
+
 echo "Uninstalled successfully!"
 """)
-    os.chmod(uninstall_script_path, stat.S_IRWXU | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
+    _make_executable(uninstall_path)
 
     print(f"Linux package created: {launcher_dir}/")
-    print(f"  To install: cd {launcher_dir} && ./install.sh")
-    print(f"  To uninstall: ./uninstall.sh")
-    print(f"  After install, find '{APP_NAME}' in your app menu or run: {EXECUTABLE_NAME}")
     return launcher_dir
 
 
-def build():
-    system = platform.system().lower()
+def create_ollama_setup_scripts(output_dir):
+    print("\nCreating Ollama setup scripts...")
 
+    setup_mac = os.path.join(output_dir, "setup-ai-mac.sh")
+    with open(setup_mac, "w") as f:
+        f.write(f"""#!/bin/bash
+set -e
+
+echo "====================================="
+echo "  Terminal Translator - AI Setup"
+echo "====================================="
+echo ""
+
+if command -v ollama &> /dev/null; then
+    echo "Ollama is already installed!"
+else
+    echo "Installing Ollama..."
+    echo "This will download about 300 MB."
+    echo ""
+
+    if command -v brew &> /dev/null; then
+        brew install ollama
+    else
+        curl -fsSL https://ollama.com/install.sh | sh
+    fi
+
+    echo ""
+    echo "Ollama installed!"
+fi
+
+echo ""
+echo "Starting Ollama..."
+ollama serve &>/dev/null &
+sleep 3
+
+echo "Downloading AI model ({OLLAMA_MODEL})..."
+echo "This will download about 1 GB (one-time only)."
+echo ""
+ollama pull {OLLAMA_MODEL}
+
+echo ""
+echo "====================================="
+echo "  AI Setup Complete!"
+echo "====================================="
+echo ""
+echo "You can now open Terminal Translator."
+echo "AI translations are ready to go!"
+echo ""
+echo "Ollama will start automatically when you"
+echo "open Terminal Translator."
+echo ""
+""")
+    _make_executable(setup_mac)
+
+    setup_linux = os.path.join(output_dir, "setup-ai-linux.sh")
+    with open(setup_linux, "w") as f:
+        f.write(f"""#!/bin/bash
+set -e
+
+echo "====================================="
+echo "  Terminal Translator - AI Setup"
+echo "====================================="
+echo ""
+
+if command -v ollama &> /dev/null; then
+    echo "Ollama is already installed!"
+else
+    echo "Installing Ollama..."
+    echo "This will download about 300 MB."
+    echo ""
+    curl -fsSL https://ollama.com/install.sh | sh
+    echo ""
+    echo "Ollama installed!"
+fi
+
+echo ""
+echo "Starting Ollama..."
+ollama serve &>/dev/null &
+sleep 3
+
+echo "Downloading AI model ({OLLAMA_MODEL})..."
+echo "This will download about 1 GB (one-time only)."
+echo ""
+ollama pull {OLLAMA_MODEL}
+
+echo ""
+echo "====================================="
+echo "  AI Setup Complete!"
+echo "====================================="
+echo ""
+echo "You can now open Terminal Translator."
+echo "AI translations are ready to go!"
+echo ""
+echo "To start Ollama on boot, run:"
+echo "  sudo systemctl enable ollama"
+echo ""
+""")
+    _make_executable(setup_linux)
+
+    print(f"AI setup scripts created in {output_dir}/")
+    return setup_mac, setup_linux
+
+
+def _make_executable(path):
+    os.chmod(path, stat.S_IRWXU | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
+
+
+def build():
+    parser = argparse.ArgumentParser(description="Build Terminal Translator")
+    parser.add_argument("--lite", action="store_true", help="Build Lite edition only (no AI setup)")
+    parser.add_argument("--full", action="store_true", help="Build Full edition with AI setup scripts")
+    args = parser.parse_args()
+
+    if not args.lite and not args.full:
+        args.lite = True
+        args.full = True
+
+    system = platform.system().lower()
     exe_path = build_executable()
 
     if system == "darwin":
@@ -284,22 +356,50 @@ def build():
     elif system == "linux":
         create_linux_launcher(exe_path)
 
-    print("\n" + "=" * 50)
-    print(f"BUILD COMPLETE — {APP_NAME} v{VERSION}")
-    print("=" * 50)
+    if args.full:
+        full_dir = os.path.join("dist", "full-edition")
+        os.makedirs(full_dir, exist_ok=True)
+        shutil.copy2(exe_path, os.path.join(full_dir, EXECUTABLE_NAME))
+        create_ollama_setup_scripts(full_dir)
 
-    if system == "darwin":
-        print(f"\nFor Mac users:")
-        print(f"  1. Open the 'dist' folder")
-        print(f"  2. Drag '{APP_NAME}.app' to Applications")
-        print(f"  3. Double-click to open — it launches Terminal automatically")
-    elif system == "linux":
-        print(f"\nFor Linux users:")
-        print(f"  1. Open a terminal in 'dist/linux-package'")
-        print(f"  2. Run: ./install.sh")
-        print(f"  3. Find '{APP_NAME}' in your app menu, or run: {EXECUTABLE_NAME}")
+        if system == "darwin":
+            app_dir = os.path.join("dist", f"{APP_NAME}.app")
+            if os.path.exists(app_dir):
+                full_app = os.path.join(full_dir, f"{APP_NAME}.app")
+                if os.path.exists(full_app):
+                    shutil.rmtree(full_app)
+                shutil.copytree(app_dir, full_app)
 
-    print(f"\nStandalone executable: dist/{EXECUTABLE_NAME}")
+        if system == "linux":
+            pkg_dir = os.path.join("dist", "linux-package")
+            if os.path.exists(pkg_dir):
+                full_pkg = os.path.join(full_dir, "linux-package")
+                if os.path.exists(full_pkg):
+                    shutil.rmtree(full_pkg)
+                shutil.copytree(pkg_dir, full_pkg)
+
+    print("\n" + "=" * 56)
+    print(f"  BUILD COMPLETE — {APP_NAME} v{VERSION}")
+    print("=" * 56)
+
+    if args.lite:
+        print(f"\n  LITE EDITION:")
+        print(f"    dist/{EXECUTABLE_NAME} ({os.path.getsize(exe_path) / 1024 / 1024:.1f} MB)")
+        if system == "darwin":
+            print(f"    dist/{APP_NAME}.app (drag to Applications)")
+        elif system == "linux":
+            print(f"    dist/linux-package/ (run install.sh)")
+
+    if args.full:
+        print(f"\n  FULL EDITION + AI:")
+        print(f"    dist/full-edition/")
+        print(f"    Includes app + Ollama setup scripts")
+        if system == "darwin":
+            print(f"    Run setup-ai-mac.sh to install Ollama + AI model")
+        elif system == "linux":
+            print(f"    Run setup-ai-linux.sh to install Ollama + AI model")
+
+    print("")
 
 
 if __name__ == "__main__":

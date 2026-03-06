@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terminal Translator — Learn the Command Line Without Fear</title>
+    <meta name="description" content="A free tool that explains terminal commands and output in plain language. No experience needed. Download for Mac or Linux.">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <div class="nav-logo">
+                &gt;_ <span>Terminal Translator</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#download">Download</a></li>
+                <li><a href="#requirements">Requirements</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-badge">Free &amp; Open Source</div>
+            <h1>
+                The terminal, <span class="highlight">translated.</span>
+            </h1>
+            <p class="hero-subtitle">
+                Type real commands. Get plain-language explanations instantly.
+                No experience needed. No copy-paste. Just open it and start learning.
+            </p>
+            <div class="hero-cta">
+                <a href="#download" class="btn btn-primary">
+                    Download Free
+                </a>
+                <a href="#how-it-works" class="btn btn-secondary">
+                    See How It Works
+                </a>
+            </div>
+
+            <div class="terminal-preview">
+                <div class="terminal-titlebar">
+                    <div class="terminal-dot dot-red"></div>
+                    <div class="terminal-dot dot-yellow"></div>
+                    <div class="terminal-dot dot-green"></div>
+                    <div class="terminal-title">Terminal Translator</div>
+                </div>
+                <div class="terminal-body">
+                    <div class="terminal-pane terminal-pane-left">
+                        <span class="pane-label">Shell</span>
+                        <div><span class="prompt">$ </span><span class="command">ls -la</span></div>
+                        <div class="output">total 48</div>
+                        <div class="output">drwxr-xr-x  5 user staff 160 Mar 6</div>
+                        <div class="output">-rw-r--r--  1 user staff 2048 app.py</div>
+                        <div class="output">drwxr-xr-x  3 user staff  96 node_modules</div>
+                        <div><span class="prompt">$ </span><span class="command">git status</span></div>
+                        <div class="output">On branch main</div>
+                        <div class="output">Changes not staged for commit:</div>
+                        <div class="output">&nbsp;&nbsp;modified: app.py</div>
+                        <div><span class="prompt">$ </span><span class="command">pip install flask</span></div>
+                        <div class="error-text">ERROR: No matching distribution</div>
+                    </div>
+                    <div class="terminal-pane">
+                        <span class="pane-label">Translation</span>
+                        <div><span class="tag-local">[Local KB]</span> command</div>
+                        <div class="explanation">This lists all files and folders with details. The letters like "drwxr-xr-x" show permissions — who can read, write, or run each file. The "5 user staff" means you own these files.</div>
+                        <div style="margin-top: 12px"><span class="tag-local">[Local KB]</span> command</div>
+                        <div class="explanation">You have changes to app.py that haven't been saved to git yet. Run "git add app.py" then "git commit" to save them.</div>
+                        <div style="margin-top: 12px"><span class="tag-ai">[Ollama AI]</span> error</div>
+                        <div class="explanation">The package "flask" can't be found. This usually means your Python version is too old or pip needs updating. Try: pip3 install flask</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="features">
+        <div class="container">
+            <div class="section-header">
+                <h2>Built for people who are new to the terminal</h2>
+                <p>Everything you need to go from confused to confident, built right in.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <span class="feature-icon">&#9881;</span>
+                    <h3>Real Shell, Real Results</h3>
+                    <p>Not a simulator. Your commands run on your actual system. Files you create are real files. Results you see are real results.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">&#9889;</span>
+                    <h3>Instant Explanations</h3>
+                    <p>79 commands and 20+ error patterns explained instantly from the built-in knowledge base. No internet needed for the basics.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">&#129302;</span>
+                    <h3>AI-Powered (Optional)</h3>
+                    <p>For commands not in the knowledge base, local AI (Ollama) explains everything. Runs on your machine, completely private and free.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">&#128640;</span>
+                    <h3>25 Starter Commands</h3>
+                    <p>Type "try 1" through "try 25" to run safe, beginner-friendly commands. Each one teaches you something new about the terminal.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">&#127760;</span>
+                    <h3>8 Languages</h3>
+                    <p>Get explanations in English, Spanish, French, German, Chinese, Japanese, Portuguese, or Korean when using AI mode.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">&#128274;</span>
+                    <h3>Private by Default</h3>
+                    <p>With the Full Edition, everything runs locally on your machine. No accounts, no tracking. Cloud AI is optional and off by default.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section how-it-works" id="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2>Up and running in 60 seconds</h2>
+                <p>No configuration. No accounts. No terminal experience needed.</p>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Download</h3>
+                    <p>Pick Lite or Full edition below. One file, no installer needed.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Open</h3>
+                    <p>Double-click the app. On Mac it opens Terminal for you automatically. On Linux it appears in your app menu.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Learn</h3>
+                    <p>Type "try 1" to run your first command. The right panel explains everything that happens, in plain language.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section download-section" id="download">
+        <div class="container">
+            <div class="section-header">
+                <h2>Choose your download</h2>
+                <p>Both editions include the full app. The difference is AI capability.</p>
+            </div>
+            <div class="download-grid">
+                <div class="download-card">
+                    <span class="download-icon">&#128230;</span>
+                    <h3>Lite Edition</h3>
+                    <p class="description">Perfect for getting started. The built-in knowledge base covers 79 commands and 20+ error patterns instantly.</p>
+                    <ul class="download-details">
+                        <li><span class="check">&#10003;</span> 79 commands explained instantly</li>
+                        <li><span class="check">&#10003;</span> 20+ error patterns recognized</li>
+                        <li><span class="check">&#10003;</span> 25 guided starter commands</li>
+                        <li><span class="check">&#10003;</span> Beginner &amp; Familiar modes</li>
+                        <li><span class="check">&#10003;</span> Works 100% offline</li>
+                        <li><span class="check">&#10003;</span> Add your own API key for cloud AI later</li>
+                    </ul>
+                    <a href="#" class="btn btn-secondary download-btn" data-edition="lite">
+                        Download Lite
+                    </a>
+                    <p class="download-size">~24 MB download</p>
+                </div>
+                <div class="download-card recommended">
+                    <div class="recommended-badge">RECOMMENDED</div>
+                    <span class="download-icon">&#129302;</span>
+                    <h3>Full Edition + AI</h3>
+                    <p class="description">Everything in Lite, plus local AI that explains any command or error — even ones not in the knowledge base.</p>
+                    <ul class="download-details">
+                        <li><span class="check">&#10003;</span> Everything in Lite edition</li>
+                        <li><span class="check">&#10003;</span> Ollama AI setup included (auto-installs)</li>
+                        <li><span class="check">&#10003;</span> Qwen2.5-Coder model (code-focused, free)</li>
+                        <li><span class="check">&#10003;</span> Explains ANY command or error</li>
+                        <li><span class="check">&#10003;</span> Runs locally — 100% private &amp; free</li>
+                        <li><span class="check">&#10003;</span> 8 language translations</li>
+                    </ul>
+                    <a href="#" class="btn btn-primary download-btn" data-edition="full">
+                        Download Full + AI
+                    </a>
+                    <p class="download-size">~24 MB app + ~1 GB AI model (one-time download)</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="requirements">
+        <div class="container">
+            <div class="section-header">
+                <h2>System Requirements</h2>
+            </div>
+            <div class="requirements">
+                <div class="req-item">
+                    <span class="req-label">macOS</span>
+                    <span class="req-value">macOS 10.15 (Catalina) or later</span>
+                </div>
+                <div class="req-item">
+                    <span class="req-label">Linux</span>
+                    <span class="req-value">Any modern distro (Ubuntu 20.04+, Fedora 34+, etc.)</span>
+                </div>
+                <div class="req-item">
+                    <span class="req-label">Windows</span>
+                    <span class="req-value">Windows 10/11 with WSL (Windows Subsystem for Linux)</span>
+                </div>
+                <div class="req-item">
+                    <span class="req-label">Disk Space</span>
+                    <span class="req-value">24 MB (Lite) or ~1.2 GB (Full with AI model)</span>
+                </div>
+                <div class="req-item">
+                    <span class="req-label">RAM</span>
+                    <span class="req-value">2 GB minimum, 4 GB recommended for AI edition</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>Terminal Translator is free and open source.</p>
+            <p style="margin-top: 8px">Made for new coders, vibe coders, and anyone intimidated by the command line.</p>
+        </div>
+    </footer>
+
+    <div id="notify-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:1000; align-items:center; justify-content:center;">
+        <div style="background:var(--bg-card); border:1px solid var(--border-accent); border-radius:16px; padding:40px; max-width:440px; text-align:center;">
+            <p style="font-size:2rem; margin-bottom:12px;">&#128640;</p>
+            <h3 style="margin-bottom:12px;">Coming Soon!</h3>
+            <p style="color:var(--text-secondary); margin-bottom:8px;" id="notify-text">We're putting the finishing touches on the download.</p>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:24px;">Check back soon for the <span id="notify-edition">Lite</span> Edition.</p>
+            <button onclick="document.getElementById('notify-modal').style.display='none'" class="btn btn-secondary" style="width:100%;">Got it</button>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.download-btn').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                var edition = this.getAttribute('data-edition');
+                var label = edition === 'full' ? 'Full + AI' : 'Lite';
+                document.getElementById('notify-edition').textContent = label;
+                document.getElementById('notify-modal').style.display = 'flex';
+            });
+        });
+    </script>
+</body>
+</html>
