@@ -27,6 +27,12 @@ from textual.message import Message
 
 from translator import translate, LANGUAGE_NAMES, AI_AVAILABLE, get_ai_status
 from knowledge_base import ensure_knowledge_base_exists
+from themes import (
+    APP_CSS,
+    load_theme_preference,
+    save_theme_preference,
+    THEME_NAMES,
+)
 
 ANSI_ESCAPE = re.compile(r"\x1b\[[0-9;]*[a-zA-Z]|\x1b\].*?\x07|\x1b\[.*?[@-~]|\r")
 
@@ -77,6 +83,7 @@ automatically. No copy-paste needed!
 [bold]Keyboard shortcuts:[/]
   [dim]Ctrl+B[/]  Toggle between Beginner and Familiar mode
   [dim]Ctrl+T[/]  Toggle AI translations on/off
+  [dim]Ctrl+S[/]  Switch theme (Terminal / Glass)
   [dim]Ctrl+L[/]  Clear the translation panel
   [dim]Ctrl+Q[/]  Quit the app
 
@@ -201,104 +208,8 @@ class ShellOutput(RichLog):
 
 
 class TerminalTranslator(App):
-    CSS = """
-    Screen {
-        layout: vertical;
-    }
 
-    #main-container {
-        layout: horizontal;
-        height: 1fr;
-    }
-
-    #shell-panel {
-        width: 1fr;
-        border: solid $accent;
-        height: 100%;
-    }
-
-    #shell-panel-inner {
-        height: 1fr;
-    }
-
-    #shell-title {
-        dock: top;
-        height: 1;
-        background: $accent;
-        color: $text;
-        text-align: center;
-        text-style: bold;
-        padding: 0 1;
-    }
-
-    #shell-output {
-        height: 1fr;
-        scrollbar-size: 1 1;
-    }
-
-    #shell-input {
-        dock: bottom;
-        height: 3;
-    }
-
-    #translation-panel {
-        width: 1fr;
-        border: solid $success;
-        height: 100%;
-    }
-
-    #translation-panel-inner {
-        height: 1fr;
-    }
-
-    #translation-title {
-        dock: top;
-        height: 1;
-        background: $success;
-        color: $text;
-        text-align: center;
-        text-style: bold;
-        padding: 0 1;
-    }
-
-    #translation-output {
-        height: 1fr;
-        scrollbar-size: 1 1;
-        padding: 0 1;
-    }
-
-    #settings-bar {
-        dock: bottom;
-        height: 3;
-        layout: horizontal;
-        background: $surface;
-        padding: 0 1;
-    }
-
-    #settings-bar Label {
-        padding: 1 1 0 0;
-        width: auto;
-    }
-
-    #mode-select {
-        width: 24;
-    }
-
-    #lang-select {
-        width: 20;
-    }
-
-    #ai-label {
-        padding: 1 1 0 2;
-    }
-
-    #status-label {
-        padding: 1 1 0 2;
-        color: $text-muted;
-        width: 1fr;
-        text-align: right;
-    }
-    """
+    CSS = APP_CSS
 
     TITLE = "Terminal Translator"
     SUB_TITLE = "Type commands in the shell \u2014 get plain-language explanations"
@@ -307,6 +218,7 @@ class TerminalTranslator(App):
         Binding("ctrl+b", "toggle_mode", "Beginner/Familiar"),
         Binding("ctrl+t", "toggle_ai", "Toggle AI"),
         Binding("ctrl+l", "clear_translations", "Clear Translations"),
+        Binding("ctrl+s", "toggle_theme", "Switch Theme"),
         Binding("ctrl+q", "quit", "Quit"),
     ]
 
@@ -323,6 +235,7 @@ class TerminalTranslator(App):
         self._pending_lines = []
         self._translation_id = 0
         self._shown_welcome = False
+        self.current_theme = load_theme_preference()
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -361,12 +274,14 @@ class TerminalTranslator(App):
                 allow_blank=False,
             )
             yield Label("AI: ON", id="ai-label")
+            yield Label(f"Theme: {THEME_NAMES.get(self.current_theme, 'Terminal')}", id="theme-label")
             yield Label("Ready", id="status-label")
 
         yield Footer()
 
     def on_mount(self) -> None:
         self.kb = ensure_knowledge_base_exists()
+        self._apply_theme_class()
         ai_status, ai_desc = get_ai_status()
         if not AI_AVAILABLE:
             self.use_ai = False
@@ -384,6 +299,11 @@ class TerminalTranslator(App):
         self._ai_status = ai_status
         self._ai_desc = ai_desc
         self._show_welcome()
+
+    def _apply_theme_class(self) -> None:
+        screen = self.screen
+        screen.remove_class("theme-terminal", "theme-glass")
+        screen.add_class(f"theme-{self.current_theme}")
 
     def _show_welcome(self) -> None:
         trans = self.query_one("#translation-output", RichLog)
@@ -404,7 +324,7 @@ class TerminalTranslator(App):
         trans.write(f"  [cyan]4.[/] [bold]{STARTER_COMMANDS[3][0]}[/] \u2014 {STARTER_COMMANDS[3][1]}")
         trans.write(f"  [cyan]5.[/] [bold]{STARTER_COMMANDS[4][0]}[/] \u2014 {STARTER_COMMANDS[4][1]}")
         trans.write("")
-        trans.write("[dim]Ctrl+B: Mode  |  Ctrl+T: AI  |  Ctrl+L: Clear  |  Ctrl+Q: Quit[/]")
+        trans.write("[dim]Ctrl+B: Mode  |  Ctrl+T: AI  |  Ctrl+S: Theme  |  Ctrl+L: Clear  |  Ctrl+Q: Quit[/]")
         if not AI_AVAILABLE:
             trans.write("")
             trans.write("[yellow]AI is off \u2014 no AI backend detected.[/]")
@@ -608,6 +528,18 @@ class TerminalTranslator(App):
         ai_label.update(f"AI: {'ON' if self.use_ai else 'OFF'}")
         status = self.query_one("#status-label", Label)
         status.update(f"AI {'enabled' if self.use_ai else 'disabled'}")
+
+    def action_toggle_theme(self) -> None:
+        if self.current_theme == "terminal":
+            self.current_theme = "glass"
+        else:
+            self.current_theme = "terminal"
+        save_theme_preference(self.current_theme)
+        self._apply_theme_class()
+        theme_label = self.query_one("#theme-label", Label)
+        theme_label.update(f"Theme: {THEME_NAMES[self.current_theme]}")
+        status = self.query_one("#status-label", Label)
+        status.update(f"Switched to {THEME_NAMES[self.current_theme]} theme")
 
     def action_clear_translations(self) -> None:
         self._pending_lines.clear()

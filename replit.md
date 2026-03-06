@@ -1,6 +1,6 @@
 # Terminal Translator
 
-A split-pane TUI tool that translates terminal/CLI output into plain-language explanations in real time. Built with Python's Textual framework and pty for real shell integration. Includes a landing page for downloads and supports both local AI (Ollama) and cloud AI (OpenAI).
+A split-pane TUI tool that translates terminal/CLI output into plain-language explanations in real time. Built with Python's Textual framework and pty for real shell integration. Includes a landing page for downloads and supports both local AI (Ollama) and cloud AI (OpenAI). Features two switchable visual themes (Terminal and Glass).
 
 ## Architecture
 
@@ -8,19 +8,28 @@ A split-pane TUI tool that translates terminal/CLI output into plain-language ex
 - **Real shell** spawned via `pty` + `os.fork()` — no copy-paste needed
 - **Three-tier translation**: local knowledge base → Ollama (local AI) → OpenAI (cloud AI)
 - **Ollama integration**: auto-detects local Ollama with Qwen2.5-Coder model
+- **Dual themes**: Terminal (hacker green) and Glass (glassmorphic purple/blue), toggled via Ctrl+S
 - **Standalone app** built with PyInstaller — macOS .app bundle, Linux .desktop launcher
 - **Landing page** served by Flask for downloads
 
 ## Key Files
 
-- `app.py` — Main Textual TUI application with shell integration, welcome tutorial, starter commands, help system, Ollama status display
+- `app.py` — Main Textual TUI application with shell integration, welcome tutorial, starter commands, help system, theme toggle
+- `themes.py` — Theme CSS definitions (Terminal + Glass), theme preference persistence to `~/.terminal-translator/preferences.json`
 - `translator.py` — Translation engine: local KB → Ollama → OpenAI fallback chain; auto-detects AI backends
 - `knowledge_base.py` — 79 commands, 20+ error patterns; stores user KB at `~/.terminal-translator/` when bundled
 - `terminal_knowledge_base.json` — User-editable JSON (auto-generated on first run)
 - `build.py` — PyInstaller build script with --lite and --full modes; creates macOS .app, Linux .desktop, Ollama setup scripts
 - `server.py` — Flask web server for the landing/download page
-- `templates/index.html` — Landing page template
-- `static/style.css` — Landing page styles
+- `templates/index.html` — Landing page template with animated terminal demo, theme showcase, download cards
+- `static/style.css` — Landing page styles (dark theme, bento grid, glassmorphic elements)
+
+## Themes
+
+- **Terminal**: Dark background (#0a0e17), green accents (#10b981), sharp borders — classic hacker aesthetic
+- **Glass**: Deep indigo background (#0f0a2e), purple/blue accents (#6366f1, #a78bfa), rounded borders — iOS glassmorphic aesthetic
+- Toggle with Ctrl+S, preference saved to `~/.terminal-translator/preferences.json`
+- Landing page showcases both themes with interactive toggle preview
 
 ## Translation Priority
 
@@ -49,7 +58,6 @@ python build.py --full   # Full edition with Ollama setup scripts
 ## Workflows
 
 - **Landing Page** — `python server.py` (webview, port 5000) — download page
-- **Start application** — `python app.py` (console) — TUI app
 
 ## In-App Commands
 
@@ -61,6 +69,7 @@ python build.py --full   # Full edition with Ollama setup scripts
 
 - **Ctrl+B**: Toggle Beginner/Familiar mode
 - **Ctrl+T**: Toggle AI on/off
+- **Ctrl+S**: Switch theme (Terminal / Glass)
 - **Ctrl+L**: Clear translation panel
 - **Ctrl+Q**: Quit
 

@@ -3,250 +3,589 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terminal Translator — Learn the Command Line Without Fear</title>
-    <meta name="description" content="A free tool that explains terminal commands and output in plain language. No experience needed. Download for Mac or Linux.">
+    <title>Terminal Translator — Understand Every Command</title>
+    <meta name="description" content="A split-pane terminal that explains commands and output in plain language as you type. Free, open source, works offline.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
+
+    <div class="grain"></div>
+
     <nav>
-        <div class="container">
-            <div class="nav-logo">
-                &gt;_ <span>Terminal Translator</span>
+        <div class="container nav-inner">
+            <a href="#" class="logo">
+                <span class="logo-icon">&gt;_</span>
+                <span class="logo-text">Terminal Translator</span>
+            </a>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="#download">Download</a>
             </div>
-            <ul class="nav-links">
-                <li><a href="#features">Features</a></li>
-                <li><a href="#how-it-works">How It Works</a></li>
-                <li><a href="#download">Download</a></li>
-                <li><a href="#requirements">Requirements</a></li>
-            </ul>
+            <a href="#download" class="btn btn-sm btn-primary nav-cta">Download Free</a>
         </div>
     </nav>
 
     <section class="hero">
+        <div class="hero-glow"></div>
         <div class="container">
-            <div class="hero-badge">Free &amp; Open Source</div>
-            <h1>
-                The terminal, <span class="highlight">translated.</span>
-            </h1>
-            <p class="hero-subtitle">
-                Type real commands. Get plain-language explanations instantly.
-                No experience needed. No copy-paste. Just open it and start learning.
-            </p>
-            <div class="hero-cta">
-                <a href="#download" class="btn btn-primary">
-                    Download Free
-                </a>
-                <a href="#how-it-works" class="btn btn-secondary">
-                    See How It Works
-                </a>
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="badge-dot"></span>
+                    Free &amp; Open Source
+                </div>
+                <h1>
+                    Stop Googling<br>
+                    terminal commands.
+                </h1>
+                <p class="hero-sub">
+                    A split-pane terminal that explains everything happening
+                    on screen — commands, output, and errors — in plain language, as you type.
+                </p>
+                <div class="hero-actions">
+                    <a href="#download" class="btn btn-primary btn-lg">
+                        <span>Download for Free</span>
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </a>
+                    <a href="#how-it-works" class="btn btn-ghost btn-lg">See how it works</a>
+                </div>
+                <div class="hero-meta">
+                    <span>macOS</span>
+                    <span class="meta-dot"></span>
+                    <span>Linux</span>
+                    <span class="meta-dot"></span>
+                    <span>WSL</span>
+                    <span class="meta-dot"></span>
+                    <span>~24 MB</span>
+                </div>
             </div>
 
-            <div class="terminal-preview">
-                <div class="terminal-titlebar">
-                    <div class="terminal-dot dot-red"></div>
-                    <div class="terminal-dot dot-yellow"></div>
-                    <div class="terminal-dot dot-green"></div>
-                    <div class="terminal-title">Terminal Translator</div>
+            <div class="terminal-window" id="terminal-demo">
+                <div class="terminal-chrome">
+                    <div class="chrome-dots">
+                        <span class="dot dot-r"></span>
+                        <span class="dot dot-y"></span>
+                        <span class="dot dot-g"></span>
+                    </div>
+                    <span class="chrome-title">Terminal Translator</span>
+                    <div class="chrome-controls">
+                        <span class="mode-pill">Beginner Mode</span>
+                    </div>
                 </div>
                 <div class="terminal-body">
-                    <div class="terminal-pane terminal-pane-left">
-                        <span class="pane-label">Shell</span>
-                        <div><span class="prompt">$ </span><span class="command">ls -la</span></div>
-                        <div class="output">total 48</div>
-                        <div class="output">drwxr-xr-x  5 user staff 160 Mar 6</div>
-                        <div class="output">-rw-r--r--  1 user staff 2048 app.py</div>
-                        <div class="output">drwxr-xr-x  3 user staff  96 node_modules</div>
-                        <div><span class="prompt">$ </span><span class="command">git status</span></div>
-                        <div class="output">On branch main</div>
-                        <div class="output">Changes not staged for commit:</div>
-                        <div class="output">&nbsp;&nbsp;modified: app.py</div>
-                        <div><span class="prompt">$ </span><span class="command">pip install flask</span></div>
-                        <div class="error-text">ERROR: No matching distribution</div>
+                    <div class="pane pane-shell">
+                        <div class="pane-header">
+                            <span class="pane-tag">SHELL</span>
+                        </div>
+                        <div class="pane-content" id="shell-content">
+                            <div class="line"><span class="ps1">~$</span> <span class="typed-cmd" data-cmd="ls -la"></span></div>
+                        </div>
                     </div>
-                    <div class="terminal-pane">
-                        <span class="pane-label">Translation</span>
-                        <div><span class="tag-local">[Local KB]</span> command</div>
-                        <div class="explanation">This lists all files and folders with details. The letters like "drwxr-xr-x" show permissions — who can read, write, or run each file. The "5 user staff" means you own these files.</div>
-                        <div style="margin-top: 12px"><span class="tag-local">[Local KB]</span> command</div>
-                        <div class="explanation">You have changes to app.py that haven't been saved to git yet. Run "git add app.py" then "git commit" to save them.</div>
-                        <div style="margin-top: 12px"><span class="tag-ai">[Ollama AI]</span> error</div>
-                        <div class="explanation">The package "flask" can't be found. This usually means your Python version is too old or pip needs updating. Try: pip3 install flask</div>
+                    <div class="pane-divider"></div>
+                    <div class="pane pane-explain">
+                        <div class="pane-header">
+                            <span class="pane-tag tag-green">TRANSLATION</span>
+                        </div>
+                        <div class="pane-content" id="explain-content"></div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="logos-bar">
+        <div class="container">
+            <div class="logos-inner">
+                <span class="built-with">Built with</span>
+                <span class="tech-pill">Python</span>
+                <span class="tech-pill">Textual</span>
+                <span class="tech-pill">Ollama</span>
+                <span class="tech-pill">OpenAI</span>
+                <span class="tech-pill">PyInstaller</span>
             </div>
         </div>
     </section>
 
     <section class="section" id="features">
         <div class="container">
-            <div class="section-header">
-                <h2>Built for people who are new to the terminal</h2>
-                <p>Everything you need to go from confused to confident, built right in.</p>
-            </div>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <span class="feature-icon">&#9881;</span>
-                    <h3>Real Shell, Real Results</h3>
-                    <p>Not a simulator. Your commands run on your actual system. Files you create are real files. Results you see are real results.</p>
+            <div class="section-label">Features</div>
+            <h2 class="section-title">Everything you need to<br>feel at home in the terminal.</h2>
+            <p class="section-sub">No prior experience required. Just open it and start typing.</p>
+
+            <div class="feature-bento">
+                <div class="bento-card bento-wide card-reveal">
+                    <div class="bento-visual">
+                        <div class="mini-terminal">
+                            <div class="mt-line"><span class="ps1">~$</span> git status</div>
+                            <div class="mt-out">On branch main</div>
+                            <div class="mt-out">Changes not staged for commit:</div>
+                            <div class="mt-out">&nbsp;&nbsp;modified: app.py</div>
+                        </div>
+                    </div>
+                    <div class="bento-text">
+                        <h3>Real shell. Real results.</h3>
+                        <p>Not a sandbox. Your commands run on your actual system with a real PTY. Files you create are real. Errors you see are real. The explanations make them understandable.</p>
+                    </div>
                 </div>
-                <div class="feature-card">
-                    <span class="feature-icon">&#9889;</span>
-                    <h3>Instant Explanations</h3>
-                    <p>79 commands and 20+ error patterns explained instantly from the built-in knowledge base. No internet needed for the basics.</p>
+
+                <div class="bento-card card-reveal">
+                    <div class="bento-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                    </div>
+                    <h3>79 commands. Instant.</h3>
+                    <p>The built-in knowledge base explains common commands and 20+ error patterns in milliseconds — no internet, no AI, no latency.</p>
                 </div>
-                <div class="feature-card">
-                    <span class="feature-icon">&#129302;</span>
-                    <h3>AI-Powered (Optional)</h3>
-                    <p>For commands not in the knowledge base, local AI (Ollama) explains everything. Runs on your machine, completely private and free.</p>
+
+                <div class="bento-card card-reveal">
+                    <div class="bento-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a5 5 0 0 1 5 5v3a5 5 0 0 1-10 0V7a5 5 0 0 1 5-5z"/><path d="M12 19v3"/><path d="M8 22h8"/><path d="M2 12h2"/><path d="M20 12h2"/></svg>
+                    </div>
+                    <h3>AI when you need it.</h3>
+                    <p>Local AI via Ollama handles anything the knowledge base can't. Runs on your machine. No cloud, no cost, no data leaving your computer.</p>
                 </div>
-                <div class="feature-card">
-                    <span class="feature-icon">&#128640;</span>
-                    <h3>25 Starter Commands</h3>
-                    <p>Type "try 1" through "try 25" to run safe, beginner-friendly commands. Each one teaches you something new about the terminal.</p>
+
+                <div class="bento-card card-reveal">
+                    <div class="bento-icon icon-glow">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    </div>
+                    <h3>25 starter commands.</h3>
+                    <p>Type <code>try 1</code> through <code>try 25</code> to run safe, guided commands that teach you the terminal step by step.</p>
                 </div>
-                <div class="feature-card">
-                    <span class="feature-icon">&#127760;</span>
-                    <h3>8 Languages</h3>
-                    <p>Get explanations in English, Spanish, French, German, Chinese, Japanese, Portuguese, or Korean when using AI mode.</p>
-                </div>
-                <div class="feature-card">
-                    <span class="feature-icon">&#128274;</span>
-                    <h3>Private by Default</h3>
-                    <p>With the Full Edition, everything runs locally on your machine. No accounts, no tracking. Cloud AI is optional and off by default.</p>
+
+                <div class="bento-card bento-wide card-reveal">
+                    <div class="bento-text">
+                        <h3>Private by default.</h3>
+                        <p>No accounts. No tracking. No telemetry. With the Full edition, everything runs locally — your commands never leave your machine. Cloud AI is optional, off by default, and only activates if you explicitly add an API key.</p>
+                    </div>
+                    <div class="bento-visual">
+                        <div class="privacy-stack">
+                            <div class="p-row"><span class="p-icon lock">&#128274;</span><span>No account required</span></div>
+                            <div class="p-row"><span class="p-icon lock">&#128274;</span><span>No telemetry</span></div>
+                            <div class="p-row"><span class="p-icon lock">&#128274;</span><span>No cloud dependency</span></div>
+                            <div class="p-row"><span class="p-icon lock">&#128274;</span><span>Works fully offline</span></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="section how-it-works" id="how-it-works">
+    <section class="section section-dark" id="themes">
         <div class="container">
-            <div class="section-header">
-                <h2>Up and running in 60 seconds</h2>
-                <p>No configuration. No accounts. No terminal experience needed.</p>
+            <div class="section-label">Two Styles</div>
+            <h2 class="section-title">Your terminal, your aesthetic.</h2>
+            <p class="section-sub">Switch between themes instantly with Ctrl+S. Your choice is remembered.</p>
+
+            <div class="theme-toggle-bar">
+                <button class="theme-tab active" data-theme="terminal" onclick="switchThemePreview('terminal')">
+                    <span class="tab-dot tab-dot-green"></span>
+                    Terminal
+                </button>
+                <button class="theme-tab" data-theme="glass" onclick="switchThemePreview('glass')">
+                    <span class="tab-dot tab-dot-purple"></span>
+                    Glass
+                </button>
             </div>
-            <div class="steps">
-                <div class="step">
-                    <div class="step-number">1</div>
+
+            <div class="theme-showcase">
+                <div class="theme-preview theme-preview-terminal active" id="preview-terminal">
+                    <div class="tp-window tp-terminal-style">
+                        <div class="tp-chrome">
+                            <span class="dot dot-r"></span>
+                            <span class="dot dot-y"></span>
+                            <span class="dot dot-g"></span>
+                            <span class="tp-title">Terminal Translator</span>
+                            <span class="tp-pill tp-pill-green">Terminal Theme</span>
+                        </div>
+                        <div class="tp-body">
+                            <div class="tp-pane tp-pane-left tp-bg-dark">
+                                <div class="tp-bar tp-bar-green">SHELL</div>
+                                <div class="tp-content">
+                                    <div><span class="tp-ps1-green">~$</span> ls -la</div>
+                                    <div class="tp-dim">drwxr-xr-x  5 user staff 160</div>
+                                    <div class="tp-dim">-rw-r--r--  1 user staff 2048 app.py</div>
+                                    <div><span class="tp-ps1-green">~$</span> git status</div>
+                                    <div class="tp-dim">On branch main</div>
+                                    <div class="tp-dim">&nbsp;&nbsp;modified: app.py</div>
+                                </div>
+                            </div>
+                            <div class="tp-pane tp-bg-dark">
+                                <div class="tp-bar tp-bar-green">TRANSLATION</div>
+                                <div class="tp-content">
+                                    <div class="tp-explain tp-explain-green">
+                                        <span class="tp-tag tp-tag-green">[Local KB]</span>
+                                        <p>This lists all files and folders with details. The letters like "drwxr-xr-x" show permissions.</p>
+                                    </div>
+                                    <div class="tp-explain tp-explain-green">
+                                        <span class="tp-tag tp-tag-green">[Local KB]</span>
+                                        <p>You have changes to app.py that haven't been saved to git yet.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tp-status tp-status-dark">
+                            <span>Mode: Beginner</span>
+                            <span>AI: ON</span>
+                            <span class="tp-accent-green">Theme: Terminal</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="theme-preview theme-preview-glass" id="preview-glass">
+                    <div class="tp-window tp-glass-style">
+                        <div class="tp-chrome tp-chrome-glass">
+                            <span class="dot dot-r"></span>
+                            <span class="dot dot-y"></span>
+                            <span class="dot dot-g"></span>
+                            <span class="tp-title">Terminal Translator</span>
+                            <span class="tp-pill tp-pill-purple">Glass Theme</span>
+                        </div>
+                        <div class="tp-body">
+                            <div class="tp-pane tp-pane-left tp-bg-glass">
+                                <div class="tp-bar tp-bar-purple">SHELL</div>
+                                <div class="tp-content">
+                                    <div><span class="tp-ps1-purple">~$</span> ls -la</div>
+                                    <div class="tp-dim-glass">drwxr-xr-x  5 user staff 160</div>
+                                    <div class="tp-dim-glass">-rw-r--r--  1 user staff 2048 app.py</div>
+                                    <div><span class="tp-ps1-purple">~$</span> git status</div>
+                                    <div class="tp-dim-glass">On branch main</div>
+                                    <div class="tp-dim-glass">&nbsp;&nbsp;modified: app.py</div>
+                                </div>
+                            </div>
+                            <div class="tp-pane tp-bg-glass">
+                                <div class="tp-bar tp-bar-purple">TRANSLATION</div>
+                                <div class="tp-content">
+                                    <div class="tp-explain tp-explain-purple">
+                                        <span class="tp-tag tp-tag-purple">[Local KB]</span>
+                                        <p>This lists all files and folders with details. The letters like "drwxr-xr-x" show permissions.</p>
+                                    </div>
+                                    <div class="tp-explain tp-explain-purple">
+                                        <span class="tp-tag tp-tag-purple">[Local KB]</span>
+                                        <p>You have changes to app.py that haven't been saved to git yet.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tp-status tp-status-glass">
+                            <span>Mode: Beginner</span>
+                            <span>AI: ON</span>
+                            <span class="tp-accent-purple">Theme: Glass</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="how-it-works">
+        <div class="container">
+            <div class="section-label">How It Works</div>
+            <h2 class="section-title">Running in 60 seconds.</h2>
+            <p class="section-sub">No configuration. No installer. No terminal experience needed.</p>
+
+            <div class="steps-track">
+                <div class="step-card card-reveal">
+                    <div class="step-num">01</div>
                     <h3>Download</h3>
-                    <p>Pick Lite or Full edition below. One file, no installer needed.</p>
+                    <p>Pick Lite or Full edition. It's a single file — drag it wherever you want.</p>
                 </div>
-                <div class="step">
-                    <div class="step-number">2</div>
+                <div class="step-connector">
+                    <svg width="40" height="2"><line x1="0" y1="1" x2="40" y2="1" stroke="var(--border)" stroke-width="2" stroke-dasharray="4 4"/></svg>
+                </div>
+                <div class="step-card card-reveal">
+                    <div class="step-num">02</div>
                     <h3>Open</h3>
-                    <p>Double-click the app. On Mac it opens Terminal for you automatically. On Linux it appears in your app menu.</p>
+                    <p>Double-click. On Mac it opens Terminal automatically. On Linux it shows in your app menu.</p>
                 </div>
-                <div class="step">
-                    <div class="step-number">3</div>
+                <div class="step-connector">
+                    <svg width="40" height="2"><line x1="0" y1="1" x2="40" y2="1" stroke="var(--border)" stroke-width="2" stroke-dasharray="4 4"/></svg>
+                </div>
+                <div class="step-card card-reveal">
+                    <div class="step-num">03</div>
                     <h3>Learn</h3>
-                    <p>Type "try 1" to run your first command. The right panel explains everything that happens, in plain language.</p>
+                    <p>Type <code>try 1</code> to run your first command. The right panel explains everything in plain language.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="section download-section" id="download">
+    <section class="section" id="download">
         <div class="container">
-            <div class="section-header">
-                <h2>Choose your download</h2>
-                <p>Both editions include the full app. The difference is AI capability.</p>
-            </div>
-            <div class="download-grid">
-                <div class="download-card">
-                    <span class="download-icon">&#128230;</span>
-                    <h3>Lite Edition</h3>
-                    <p class="description">Perfect for getting started. The built-in knowledge base covers 79 commands and 20+ error patterns instantly.</p>
-                    <ul class="download-details">
-                        <li><span class="check">&#10003;</span> 79 commands explained instantly</li>
-                        <li><span class="check">&#10003;</span> 20+ error patterns recognized</li>
-                        <li><span class="check">&#10003;</span> 25 guided starter commands</li>
-                        <li><span class="check">&#10003;</span> Beginner &amp; Familiar modes</li>
-                        <li><span class="check">&#10003;</span> Works 100% offline</li>
-                        <li><span class="check">&#10003;</span> Add your own API key for cloud AI later</li>
+            <div class="section-label">Download</div>
+            <h2 class="section-title">Choose your edition.</h2>
+            <p class="section-sub">Both include the full app. The difference is AI capability.</p>
+
+            <div class="pricing-grid">
+                <div class="price-card card-reveal">
+                    <div class="price-header">
+                        <span class="price-name">Lite</span>
+                        <span class="price-tag">Free</span>
+                    </div>
+                    <p class="price-desc">The built-in knowledge base handles 79 commands and 20+ error patterns instantly.</p>
+                    <ul class="price-features">
+                        <li>79 commands explained instantly</li>
+                        <li>20+ error patterns recognized</li>
+                        <li>25 guided starter commands</li>
+                        <li>Beginner &amp; Familiar modes</li>
+                        <li>Works 100% offline</li>
+                        <li>BYO API key for cloud AI later</li>
                     </ul>
-                    <a href="#" class="btn btn-secondary download-btn" data-edition="lite">
+                    <a href="#" class="btn btn-outline btn-full download-btn" data-edition="lite">
                         Download Lite
+                        <span class="btn-sub">~24 MB</span>
                     </a>
-                    <p class="download-size">~24 MB download</p>
                 </div>
-                <div class="download-card recommended">
-                    <div class="recommended-badge">RECOMMENDED</div>
-                    <span class="download-icon">&#129302;</span>
-                    <h3>Full Edition + AI</h3>
-                    <p class="description">Everything in Lite, plus local AI that explains any command or error — even ones not in the knowledge base.</p>
-                    <ul class="download-details">
-                        <li><span class="check">&#10003;</span> Everything in Lite edition</li>
-                        <li><span class="check">&#10003;</span> Ollama AI setup included (auto-installs)</li>
-                        <li><span class="check">&#10003;</span> Qwen2.5-Coder model (code-focused, free)</li>
-                        <li><span class="check">&#10003;</span> Explains ANY command or error</li>
-                        <li><span class="check">&#10003;</span> Runs locally — 100% private &amp; free</li>
-                        <li><span class="check">&#10003;</span> 8 language translations</li>
+
+                <div class="price-card price-card-pop card-reveal">
+                    <div class="pop-label">Recommended</div>
+                    <div class="price-header">
+                        <span class="price-name">Full + AI</span>
+                        <span class="price-tag">Free</span>
+                    </div>
+                    <p class="price-desc">Everything in Lite, plus local AI that explains any command or error — even ones not in the knowledge base.</p>
+                    <ul class="price-features">
+                        <li>Everything in Lite</li>
+                        <li>Ollama AI auto-setup included</li>
+                        <li>Qwen2.5-Coder model (code-focused)</li>
+                        <li>Explains ANY command or error</li>
+                        <li>100% local &amp; private</li>
+                        <li>8 language translations</li>
                     </ul>
-                    <a href="#" class="btn btn-primary download-btn" data-edition="full">
+                    <a href="#" class="btn btn-primary btn-full download-btn" data-edition="full">
                         Download Full + AI
+                        <span class="btn-sub">~24 MB app + ~1 GB model</span>
                     </a>
-                    <p class="download-size">~24 MB app + ~1 GB AI model (one-time download)</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="section" id="requirements">
+    <section class="section section-dark" id="requirements">
         <div class="container">
-            <div class="section-header">
-                <h2>System Requirements</h2>
+            <div class="section-label">System Requirements</div>
+            <div class="req-grid">
+                <div class="req-card card-reveal">
+                    <div class="req-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>
+                    </div>
+                    <h4>macOS</h4>
+                    <p>Catalina (10.15) or later</p>
+                </div>
+                <div class="req-card card-reveal">
+                    <div class="req-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    </div>
+                    <h4>Linux</h4>
+                    <p>Ubuntu 20.04+, Fedora 34+, or equivalent</p>
+                </div>
+                <div class="req-card card-reveal">
+                    <div class="req-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V6a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v14"/><path d="M2 20h20"/><path d="M14 12v.01"/></svg>
+                    </div>
+                    <h4>Windows</h4>
+                    <p>Windows 10/11 with WSL</p>
+                </div>
+                <div class="req-card card-reveal">
+                    <div class="req-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                    </div>
+                    <h4>Storage</h4>
+                    <p>24 MB (Lite) &middot; ~1.2 GB (Full + AI)</p>
+                </div>
             </div>
-            <div class="requirements">
-                <div class="req-item">
-                    <span class="req-label">macOS</span>
-                    <span class="req-value">macOS 10.15 (Catalina) or later</span>
-                </div>
-                <div class="req-item">
-                    <span class="req-label">Linux</span>
-                    <span class="req-value">Any modern distro (Ubuntu 20.04+, Fedora 34+, etc.)</span>
-                </div>
-                <div class="req-item">
-                    <span class="req-label">Windows</span>
-                    <span class="req-value">Windows 10/11 with WSL (Windows Subsystem for Linux)</span>
-                </div>
-                <div class="req-item">
-                    <span class="req-label">Disk Space</span>
-                    <span class="req-value">24 MB (Lite) or ~1.2 GB (Full with AI model)</span>
-                </div>
-                <div class="req-item">
-                    <span class="req-label">RAM</span>
-                    <span class="req-value">2 GB minimum, 4 GB recommended for AI edition</span>
-                </div>
-            </div>
+        </div>
+    </section>
+
+    <section class="final-cta">
+        <div class="container">
+            <div class="cta-glow"></div>
+            <h2>Ready to understand<br>your terminal?</h2>
+            <p>Free. Open source. No account required.</p>
+            <a href="#download" class="btn btn-primary btn-lg">Download Terminal Translator</a>
         </div>
     </section>
 
     <footer>
-        <div class="container">
-            <p>Terminal Translator is free and open source.</p>
-            <p style="margin-top: 8px">Made for new coders, vibe coders, and anyone intimidated by the command line.</p>
+        <div class="container footer-inner">
+            <span class="footer-logo">&gt;_ Terminal Translator</span>
+            <span class="footer-tagline">Made for new coders, vibe coders, and anyone intimidated by the command line.</span>
         </div>
     </footer>
 
-    <div id="notify-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:1000; align-items:center; justify-content:center;">
-        <div style="background:var(--bg-card); border:1px solid var(--border-accent); border-radius:16px; padding:40px; max-width:440px; text-align:center;">
-            <p style="font-size:2rem; margin-bottom:12px;">&#128640;</p>
-            <h3 style="margin-bottom:12px;">Coming Soon!</h3>
-            <p style="color:var(--text-secondary); margin-bottom:8px;" id="notify-text">We're putting the finishing touches on the download.</p>
-            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:24px;">Check back soon for the <span id="notify-edition">Lite</span> Edition.</p>
-            <button onclick="document.getElementById('notify-modal').style.display='none'" class="btn btn-secondary" style="width:100%;">Got it</button>
+    <div class="modal-overlay" id="notify-modal">
+        <div class="modal-card">
+            <button class="modal-close" onclick="document.getElementById('notify-modal').classList.remove('active')">&times;</button>
+            <div class="modal-icon">&#128640;</div>
+            <h3>Coming Soon</h3>
+            <p>We're putting the finishing touches on the <strong id="notify-edition">Lite</strong> Edition download.</p>
+            <p class="modal-sub">Star the repo or check back shortly.</p>
+            <button onclick="document.getElementById('notify-modal').classList.remove('active')" class="btn btn-outline btn-full">Got it</button>
         </div>
     </div>
 
     <script>
+    (function() {
         document.querySelectorAll('.download-btn').forEach(function(btn) {
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
                 var edition = this.getAttribute('data-edition');
-                var label = edition === 'full' ? 'Full + AI' : 'Lite';
-                document.getElementById('notify-edition').textContent = label;
-                document.getElementById('notify-modal').style.display = 'flex';
+                document.getElementById('notify-edition').textContent = edition === 'full' ? 'Full + AI' : 'Lite';
+                document.getElementById('notify-modal').classList.add('active');
             });
         });
+
+        var observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('revealed');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll('.card-reveal').forEach(function(el) {
+            observer.observe(el);
+        });
+
+        var demoScenes = [
+            {
+                cmd: 'ls -la',
+                output: [
+                    'total 48',
+                    'drwxr-xr-x  5 user staff 160 Mar 6 .',
+                    '-rw-r--r--  1 user staff 2048 app.py',
+                    'drwxr-xr-x  3 user staff  96 src/'
+                ],
+                tag: 'Local KB',
+                tagClass: 'tag-green',
+                explain: 'This lists all files and folders in detail. The letters like "drwxr-xr-x" show permissions — who can read, write, or run each file. You own these files (user/staff).'
+            },
+            {
+                cmd: 'git status',
+                output: [
+                    'On branch main',
+                    'Changes not staged for commit:',
+                    '  modified: app.py',
+                    '  modified: style.css'
+                ],
+                tag: 'Local KB',
+                tagClass: 'tag-green',
+                explain: 'You have changes to app.py and style.css that haven\'t been saved to git yet. Run "git add ." then "git commit -m your message" to save them.'
+            },
+            {
+                cmd: 'pip install flask',
+                output: [
+                    'ERROR: Could not find a version',
+                    'that satisfies the requirement',
+                    'flask (from versions: none)'
+                ],
+                isError: true,
+                tag: 'Ollama AI',
+                tagClass: 'tag-blue',
+                explain: 'The package "flask" can\'t be found for your Python version. This usually means pip is pointing to the wrong Python. Try: pip3 install flask — or: python3 -m pip install flask'
+            },
+            {
+                cmd: 'chmod +x deploy.sh',
+                output: [],
+                tag: 'Local KB',
+                tagClass: 'tag-green',
+                explain: 'This makes the file "deploy.sh" executable — meaning you can now run it as a program by typing ./deploy.sh. Without this, the system would refuse to run the script.'
+            }
+        ];
+
+        var shellEl = document.getElementById('shell-content');
+        var explainEl = document.getElementById('explain-content');
+        var sceneIndex = 0;
+        var isRunning = false;
+
+        function sleep(ms) { return new Promise(function(r) { setTimeout(r, ms); }); }
+
+        async function typeText(el, text, speed) {
+            for (var i = 0; i < text.length; i++) {
+                el.textContent += text[i];
+                await sleep(speed || 45);
+            }
+        }
+
+        async function runScene(scene) {
+            var cmdLine = document.createElement('div');
+            cmdLine.className = 'line';
+            cmdLine.innerHTML = '<span class="ps1">~$</span> <span class="typed-text"></span><span class="cursor">|</span>';
+            shellEl.appendChild(cmdLine);
+
+            var typedSpan = cmdLine.querySelector('.typed-text');
+            await typeText(typedSpan, scene.cmd, 50);
+
+            var cursorEl = cmdLine.querySelector('.cursor');
+            if (cursorEl) cursorEl.remove();
+
+            await sleep(300);
+
+            for (var i = 0; i < scene.output.length; i++) {
+                var outLine = document.createElement('div');
+                outLine.className = 'line out' + (scene.isError ? ' err' : '');
+                outLine.textContent = scene.output[i];
+                shellEl.appendChild(outLine);
+                await sleep(80);
+            }
+
+            await sleep(400);
+
+            var explainBlock = document.createElement('div');
+            explainBlock.className = 'explain-block fade-in';
+            explainBlock.innerHTML = '<span class="ex-tag ' + scene.tagClass + '">' + scene.tag + '</span>';
+            var explainP = document.createElement('p');
+            explainBlock.appendChild(explainP);
+            explainEl.appendChild(explainBlock);
+
+            await typeText(explainP, scene.explain, 12);
+        }
+
+        async function runDemo() {
+            if (isRunning) return;
+            isRunning = true;
+
+            while (true) {
+                shellEl.innerHTML = '';
+                explainEl.innerHTML = '';
+
+                for (var i = 0; i < demoScenes.length; i++) {
+                    await runScene(demoScenes[i]);
+                    await sleep(2000);
+                }
+
+                await sleep(3000);
+            }
+        }
+
+        var termObs = new IntersectionObserver(function(entries) {
+            if (entries[0].isIntersecting) {
+                runDemo();
+                termObs.disconnect();
+            }
+        }, { threshold: 0.3 });
+        termObs.observe(document.getElementById('terminal-demo'));
+
+        window.switchThemePreview = function(theme) {
+            document.querySelectorAll('.theme-tab').forEach(function(t) { t.classList.remove('active'); });
+            document.querySelector('.theme-tab[data-theme="' + theme + '"]').classList.add('active');
+            document.querySelectorAll('.theme-preview').forEach(function(p) { p.classList.remove('active'); });
+            document.getElementById('preview-' + theme).classList.add('active');
+        };
+
+        document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+            a.addEventListener('click', function(e) {
+                var target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    e.preventDefault();
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    })();
     </script>
 </body>
 </html>

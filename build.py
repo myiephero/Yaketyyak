@@ -31,7 +31,7 @@ HIDDEN_IMPORTS = [
     "textual.widgets._rich_log",
     "rich", "rich.text", "rich.console", "rich.markup",
     "rich.segment", "rich.style", "rich.color", "rich.terminal_theme",
-    "openai", "pexpect", "translator", "knowledge_base",
+    "openai", "pexpect", "translator", "knowledge_base", "themes",
 ]
 
 
