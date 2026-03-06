@@ -1,11 +1,11 @@
 {
   "commands": {
     "ls": {
-      "beginner": "This command lists all the files and folders in your current directory (like opening a folder on your desktop to see what's inside).",
+      "beginner": "This command lists all the files and folders in your current directory (like opening a folder on your desktop to see what's inside). Common flags: -l (detailed list), -a (show hidden files), -h (human-readable sizes).",
       "familiar": "Lists directory contents. Common flags: -l (long format), -a (show hidden), -h (human-readable sizes)."
     },
     "cd": {
-      "beginner": "This command changes which folder you're currently working in. Think of it like double-clicking a folder to go inside it. 'cd ..' goes back up one level.",
+      "beginner": "This command changes which folder you're currently working in. Think of it like double-clicking a folder to go inside it. 'cd ..' goes back up one level, 'cd ~' goes to your home folder.",
       "familiar": "Change directory. Use 'cd ..' to go up, 'cd ~' for home, 'cd -' for previous directory."
     },
     "pwd": {
@@ -13,27 +13,27 @@
       "familiar": "Print working directory \u2014 shows the absolute path of your current location."
     },
     "mkdir": {
-      "beginner": "This creates a new folder. For example, 'mkdir my_project' makes a new folder called 'my_project'.",
+      "beginner": "This creates a new folder. For example, 'mkdir my_project' makes a new folder called 'my_project'. Use -p to create nested folders.",
       "familiar": "Create a new directory. Use -p to create nested directories (e.g., mkdir -p a/b/c)."
     },
     "rm": {
-      "beginner": "This deletes a file permanently (it does NOT go to the trash). Be very careful with this! 'rm -r' deletes entire folders and everything inside them.",
+      "beginner": "This deletes a file permanently (it does NOT go to the trash!). Be very careful! 'rm -r' deletes entire folders and everything inside them. 'rm -f' forces deletion without asking.",
       "familiar": "Remove files/directories. -r for recursive, -f for force (no confirmation). Use with caution."
     },
     "cp": {
-      "beginner": "This copies a file from one place to another. For example, 'cp file.txt backup.txt' makes a copy of file.txt called backup.txt.",
+      "beginner": "This copies a file from one place to another. For example, 'cp file.txt backup.txt' makes a copy of file.txt called backup.txt. Use -r to copy entire folders.",
       "familiar": "Copy files/directories. Use -r for directories, -i for interactive (confirm overwrite)."
     },
     "mv": {
-      "beginner": "This moves a file to a different location OR renames it. 'mv old_name.txt new_name.txt' renames the file.",
+      "beginner": "This moves a file to a different location OR renames it. 'mv old_name.txt new_name.txt' renames the file. 'mv file.txt /other/folder/' moves it.",
       "familiar": "Move or rename files/directories. Also used for renaming in-place."
     },
     "cat": {
-      "beginner": "This displays the entire contents of a file right in your terminal, like opening a text file to read it.",
+      "beginner": "This displays the entire contents of a file right in your terminal, like opening a text file to read it. For large files, use 'less' instead.",
       "familiar": "Concatenate and display file contents. For large files, consider using 'less' or 'head'/'tail' instead."
     },
     "grep": {
-      "beginner": "This searches through files to find lines that contain specific text. It's like using Ctrl+F (Find) but for files in your terminal.",
+      "beginner": "This searches through files to find lines that contain specific text. It's like using Ctrl+F (Find) but for files in your terminal. Example: 'grep error log.txt' finds all lines with 'error'.",
       "familiar": "Search text using patterns. -r for recursive, -i for case-insensitive, -n for line numbers, -E for extended regex."
     },
     "chmod": {
@@ -48,16 +48,24 @@
       "beginner": "This downloads and installs a Python package (a pre-built tool or library) from the internet so you can use it in your code.",
       "familiar": "Install Python packages from PyPI. Use -r requirements.txt for bulk install, --upgrade to update."
     },
+    "pip": {
+      "beginner": "Pip is Python's package installer. It lets you download and manage libraries and tools. 'pip install <name>' adds a package, 'pip list' shows installed ones.",
+      "familiar": "Python package manager. install, uninstall, list, freeze, show. Use pip3 on systems with both Python 2 and 3."
+    },
     "npm install": {
       "beginner": "This downloads and installs a JavaScript/Node.js package so you can use it in your project. It saves it in a folder called 'node_modules'.",
       "familiar": "Install Node.js packages. --save-dev for dev dependencies, -g for global install."
+    },
+    "npm": {
+      "beginner": "npm is the Node.js package manager. It lets you install JavaScript libraries, run scripts, and manage your project. 'npm install' gets all dependencies, 'npm run' runs scripts.",
+      "familiar": "Node.js package manager. install, run, test, build, publish. See package.json for available scripts."
     },
     "git clone": {
       "beginner": "This downloads a complete copy of a project from the internet (usually from GitHub) to your computer so you can work on it.",
       "familiar": "Clone a remote repository. Use --depth 1 for shallow clone, --branch to specify branch."
     },
     "git add": {
-      "beginner": "This tells Git to start tracking changes you've made to specific files. It's like putting files in a 'ready to save' staging area.",
+      "beginner": "This tells Git to start tracking changes you've made to specific files. It's like putting files in a 'ready to save' staging area before committing.",
       "familiar": "Stage changes for commit. 'git add .' stages all, 'git add -p' for interactive staging."
     },
     "git commit": {
@@ -73,8 +81,24 @@
       "familiar": "Fetch and merge remote changes. --rebase to rebase instead of merge."
     },
     "git status": {
-      "beginner": "This shows you which files have been changed, which are staged (ready to commit), and which are not being tracked by Git.",
+      "beginner": "This shows you which files have been changed, which are staged (ready to commit), and which are not being tracked by Git. Very useful to see what's going on.",
       "familiar": "Show working tree status. -s for short format, --branch for branch info."
+    },
+    "git diff": {
+      "beginner": "This shows you exactly what changes you've made to files since the last commit. Added lines show in green with '+', removed lines in red with '-'.",
+      "familiar": "Show changes between commits, working tree, etc. --staged for staged changes, --stat for summary."
+    },
+    "git log": {
+      "beginner": "This shows the history of all previous commits (save points) in your project, with who made them and when.",
+      "familiar": "Show commit history. --oneline for compact view, --graph for branch visualization, -n to limit count."
+    },
+    "git branch": {
+      "beginner": "This shows or creates branches. Branches let you work on different features without affecting the main code. Like having parallel copies of your project.",
+      "familiar": "List, create, or delete branches. -d to delete, -a to show all (including remote)."
+    },
+    "git checkout": {
+      "beginner": "This switches between branches or restores files. 'git checkout main' switches to the main branch. 'git checkout -b new-branch' creates and switches to a new branch.",
+      "familiar": "Switch branches or restore files. -b to create and switch. Prefer 'git switch' for branch switching."
     },
     "python": {
       "beginner": "This runs a Python script or starts the Python interactive mode where you can type Python code and see results immediately.",
@@ -97,7 +121,7 @@
       "familiar": "Container management. Common: run, build, ps, logs, exec, stop, rm. Use docker-compose for multi-container setups."
     },
     "echo": {
-      "beginner": "This prints text to the terminal. It's often used in scripts to show messages or to write text into files.",
+      "beginner": "This prints text to the terminal. It's often used in scripts to show messages or to write text into files using > or >>.",
       "familiar": "Output text to terminal. Use with >> to append to files, > to overwrite. Supports variable expansion."
     },
     "touch": {
@@ -112,12 +136,16 @@
       "beginner": "This stops a running program by sending it a signal. You need to know the program's process ID (PID), which you can find using 'ps' or 'top'.",
       "familiar": "Send signals to processes. -9 for SIGKILL (force), -15 for SIGTERM (graceful). Use killall for name-based."
     },
+    "ps": {
+      "beginner": "This shows a list of programs currently running on your computer. 'ps aux' shows all processes. Useful to find the ID of a process you want to stop.",
+      "familiar": "List running processes. aux for all users, -ef for full format. Pipe to grep to filter."
+    },
     "top": {
-      "beginner": "This shows you a live updating list of all running programs and how much of your computer's resources (CPU, memory) they're using.",
+      "beginner": "This shows you a live updating list of all running programs and how much of your computer's resources (CPU, memory) they're using. Press 'q' to quit.",
       "familiar": "Real-time process monitor. Press 'q' to quit, 'M' to sort by memory, 'P' by CPU. Consider using htop."
     },
     "man": {
-      "beginner": "This opens the manual (help documentation) for any command. For example, 'man ls' shows you everything you can do with the 'ls' command.",
+      "beginner": "This opens the manual (help documentation) for any command. For example, 'man ls' shows you everything you can do with the 'ls' command. Press 'q' to quit.",
       "familiar": "Display manual pages. Use 'q' to exit, '/' to search, 'n' for next match."
     },
     "tar": {
@@ -135,6 +163,158 @@
     "brew": {
       "beginner": "Homebrew is a package manager for macOS (and Linux). It lets you easily install software and developer tools that aren't included with your operating system.",
       "familiar": "macOS/Linux package manager. install, uninstall, update, upgrade, search, info, list."
+    },
+    "head": {
+      "beginner": "This shows only the first few lines of a file (10 by default). Useful for peeking at large files without loading everything.",
+      "familiar": "Show first N lines of a file. -n to specify count. Default is 10 lines."
+    },
+    "tail": {
+      "beginner": "This shows the last few lines of a file (10 by default). Very useful for checking recent log entries. 'tail -f' watches a file for new lines in real-time.",
+      "familiar": "Show last N lines. -n for count, -f to follow (live updates). Great for log monitoring."
+    },
+    "wc": {
+      "beginner": "This counts the number of lines, words, and characters in a file. 'wc -l' counts just lines.",
+      "familiar": "Word/line/char count. -l lines only, -w words only, -c bytes, -m characters."
+    },
+    "which": {
+      "beginner": "This tells you where a program is installed on your computer. For example, 'which python' shows the full path to the Python executable.",
+      "familiar": "Locate a command's executable path. Useful for debugging PATH issues."
+    },
+    "env": {
+      "beginner": "This shows all the environment variables set in your terminal session. Environment variables are like settings that programs can read.",
+      "familiar": "Display or set environment variables. Often piped to grep: env | grep PATH."
+    },
+    "export": {
+      "beginner": "This sets an environment variable that other programs can use. For example, 'export API_KEY=abc123' stores a value that your app can read.",
+      "familiar": "Set environment variables for the current session. Add to ~/.bashrc or ~/.zshrc for persistence."
+    },
+    "source": {
+      "beginner": "This runs all the commands in a file within your current terminal session. Commonly used to activate virtual environments or reload config files.",
+      "familiar": "Execute file in current shell context. Common: source ~/.bashrc, source venv/bin/activate."
+    },
+    "clear": {
+      "beginner": "This clears all the text from your terminal screen, giving you a fresh, clean view. Your command history is still there, just scrolled away.",
+      "familiar": "Clear terminal screen. Ctrl+L is a common shortcut alternative."
+    },
+    "history": {
+      "beginner": "This shows a list of all the commands you've typed recently. You can re-run a previous command by typing '!' followed by its number.",
+      "familiar": "Show command history. !n to re-run command n, !! for last command, !string for last command starting with string."
+    },
+    "whoami": {
+      "beginner": "This shows your current username \u2014 the name your computer knows you by. Useful when you're not sure which account you're logged into.",
+      "familiar": "Print effective user ID / username."
+    },
+    "uname": {
+      "beginner": "This shows information about your operating system. 'uname -a' shows everything: OS name, version, computer type, and more.",
+      "familiar": "Print system info. -a for all, -s for OS name, -r for kernel release, -m for machine type."
+    },
+    "df": {
+      "beginner": "This shows how much disk space you have available on your computer. 'df -h' makes the numbers easy to read (like '50G' instead of a huge number).",
+      "familiar": "Report filesystem disk space usage. -h for human-readable, -i for inodes, -T for filesystem type."
+    },
+    "free": {
+      "beginner": "This shows how much memory (RAM) your computer has and how much is being used. 'free -h' makes it easy to read.",
+      "familiar": "Display memory usage. -h for human-readable, -g for gigabytes, -s N for continuous monitoring every N seconds."
+    },
+    "uptime": {
+      "beginner": "This shows how long your computer has been running since it was last turned on, plus the system load (how busy it is).",
+      "familiar": "Show system uptime and load averages (1, 5, 15 min). Load > number of CPUs indicates saturation."
+    },
+    "less": {
+      "beginner": "This lets you scroll through a file page by page (unlike 'cat' which dumps everything at once). Press 'q' to quit, arrow keys to scroll, '/' to search.",
+      "familiar": "Pager for viewing files. q to quit, / to search, n/N for next/prev match, g/G for top/bottom."
+    },
+    "sort": {
+      "beginner": "This arranges lines of text in order (alphabetically by default). 'sort -n' sorts by number, 'sort -r' sorts in reverse.",
+      "familiar": "Sort lines of text. -n for numeric, -r for reverse, -k for key field, -u for unique, -t for delimiter."
+    },
+    "uniq": {
+      "beginner": "This removes duplicate lines that are next to each other. Usually used after 'sort' to get only unique lines.",
+      "familiar": "Filter adjacent duplicate lines. -c for count, -d to show only duplicates, -u for unique only. Requires sorted input."
+    },
+    "sed": {
+      "beginner": "This is a text editor that works on streams of text (not interactively). It's most commonly used to find and replace text in files, like 'sed s/old/new/g file.txt'.",
+      "familiar": "Stream editor. Common: s/pattern/replacement/g for substitution, -i for in-place edit, -E for extended regex."
+    },
+    "awk": {
+      "beginner": "This is a powerful text-processing tool that works on columns of data. It can pick out specific columns, do math, and filter lines.",
+      "familiar": "Pattern scanning and processing. '{print $1}' for first column, -F for delimiter, supports conditions and functions."
+    },
+    "xargs": {
+      "beginner": "This takes a list of items (usually from another command) and runs a command on each one. It's like a 'for each' loop in the terminal.",
+      "familiar": "Build and execute commands from stdin. -I{} for placeholder, -P for parallel, -n for max args per command."
+    },
+    "tee": {
+      "beginner": "This sends output to both the screen AND a file at the same time. Useful when you want to see output and save it too.",
+      "familiar": "Read stdin and write to both stdout and files. -a to append instead of overwrite."
+    },
+    "diff": {
+      "beginner": "This compares two files and shows you exactly what's different between them. Lines with '<' are from the first file, '>' from the second.",
+      "familiar": "Compare files line by line. -u for unified format, -r for recursive (directories), --color for colored output."
+    },
+    "ln": {
+      "beginner": "This creates a link (shortcut) to a file or folder. 'ln -s target linkname' creates a symbolic link, like a shortcut on your desktop.",
+      "familiar": "Create hard or symbolic links. -s for symbolic (soft) link, -f to force overwrite. Symlinks are more common."
+    },
+    "du": {
+      "beginner": "This shows how much disk space files and folders are using. 'du -sh *' gives you a nice summary of each item in the current folder.",
+      "familiar": "Estimate file/directory space usage. -s for summary, -h for human-readable, --max-depth=N to limit depth."
+    },
+    "tree": {
+      "beginner": "This shows all the files and folders in a nice tree-like diagram, so you can see the whole structure at a glance.",
+      "familiar": "List directory contents in tree format. -L N for depth limit, -a for hidden files, -d for directories only."
+    },
+    "htop": {
+      "beginner": "This is a prettier, more interactive version of 'top'. It shows all running programs and resource usage with color coding. Press 'q' to quit, F9 to kill a process.",
+      "familiar": "Interactive process viewer. Better than top. F5 for tree view, F6 to sort, F9 to kill, / to search."
+    },
+    "nano": {
+      "beginner": "This opens a simple text editor right in your terminal. It's the easiest terminal text editor for beginners. The commands are shown at the bottom (^ means Ctrl).",
+      "familiar": "Simple terminal text editor. Ctrl+O to save, Ctrl+X to exit, Ctrl+W to search, Ctrl+K to cut line."
+    },
+    "vim": {
+      "beginner": "This is a powerful text editor in your terminal. It can be confusing at first! Press 'i' to start typing, 'Esc' to stop typing, then ':wq' and Enter to save and quit. To quit without saving: ':q!' and Enter.",
+      "familiar": "Modal text editor. i for insert mode, Esc for normal mode, :w to save, :q to quit, :wq to save+quit, /pattern to search."
+    },
+    "ping": {
+      "beginner": "This checks if you can reach another computer or website over the internet. It sends small packets and measures how long they take to come back. Press Ctrl+C to stop.",
+      "familiar": "Send ICMP echo requests. -c N for count, -i N for interval. Ctrl+C to stop. Useful for connectivity testing."
+    },
+    "ifconfig": {
+      "beginner": "This shows your computer's network connections and IP addresses. It tells you how your computer is connected to networks.",
+      "familiar": "Display/configure network interfaces. Deprecated in favor of 'ip addr' on modern Linux."
+    },
+    "ip": {
+      "beginner": "This is the modern way to see and configure your computer's network settings. 'ip addr' shows your IP addresses, 'ip route' shows how traffic flows.",
+      "familiar": "Show/manipulate networking. 'ip addr' for addresses, 'ip route' for routing, 'ip link' for interfaces."
+    },
+    "netstat": {
+      "beginner": "This shows all the network connections your computer currently has open. Useful to see what programs are using the network.",
+      "familiar": "Network statistics. -tlnp for listening TCP with PIDs, -an for all connections. Consider 'ss' as modern replacement."
+    },
+    "zip": {
+      "beginner": "This compresses files into a .zip archive (like right-clicking and choosing 'Compress' on your desktop). 'unzip' extracts them.",
+      "familiar": "Create zip archives. -r for recursive (directories), unzip to extract, -l to list contents."
+    },
+    "scp": {
+      "beginner": "This copies files securely between your computer and another computer over the internet. It works like 'cp' but across machines.",
+      "familiar": "Secure copy over SSH. scp file user@host:path for upload, scp user@host:file . for download. -r for directories."
+    },
+    "crontab": {
+      "beginner": "This lets you schedule commands to run automatically at specific times (like setting an alarm). 'crontab -l' shows your scheduled tasks, 'crontab -e' lets you edit them.",
+      "familiar": "Manage cron jobs. -l to list, -e to edit, -r to remove. Format: min hour day month weekday command."
+    },
+    "alias": {
+      "beginner": "This creates a shortcut for a longer command. For example, 'alias ll=ls -la' lets you type just 'll' instead of 'ls -la'.",
+      "familiar": "Create command shortcuts. Add to ~/.bashrc for persistence. 'unalias' to remove. 'alias' alone lists all."
+    },
+    "nslookup": {
+      "beginner": "This looks up the IP address of a website. For example, 'nslookup google.com' shows you the actual server addresses behind that name.",
+      "familiar": "Query DNS records. Alternative: dig. Shows A, AAAA, MX records etc."
+    },
+    "date": {
+      "beginner": "This shows the current date and time on your computer. You can also use it to display dates in different formats.",
+      "familiar": "Display or set system date/time. Use +FORMAT for custom output (e.g., date '+%Y-%m-%d')."
     }
   },
   "error_patterns": {

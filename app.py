@@ -30,6 +30,76 @@ from knowledge_base import ensure_knowledge_base_exists
 
 ANSI_ESCAPE = re.compile(r"\x1b\[[0-9;]*[a-zA-Z]|\x1b\].*?\x07|\x1b\[.*?[@-~]|\r")
 
+STARTER_COMMANDS = [
+    ("pwd", "See what folder you're currently in"),
+    ("ls", "List files and folders here"),
+    ("ls -la", "List ALL files with details (including hidden)"),
+    ("echo 'Hello World!'", "Print a message to the screen"),
+    ("date", "Show the current date and time"),
+    ("whoami", "Show your username"),
+    ("uname -a", "Show info about your operating system"),
+    ("cat /etc/os-release", "Show which Linux/OS version you have"),
+    ("df -h", "Show how much disk space you have"),
+    ("free -h", "Show how much memory (RAM) is available"),
+    ("env | head -5", "Show first 5 environment variables"),
+    ("history", "Show your recent command history"),
+    ("mkdir test_folder", "Create a new folder called test_folder"),
+    ("touch test_file.txt", "Create an empty file called test_file.txt"),
+    ("echo 'hello' > test_file.txt", "Write 'hello' into test_file.txt"),
+    ("cat test_file.txt", "Read the contents of test_file.txt"),
+    ("cp test_file.txt backup.txt", "Copy test_file.txt to backup.txt"),
+    ("ls -la test_*", "List all files starting with 'test_'"),
+    ("rm test_file.txt backup.txt", "Delete the test files"),
+    ("rmdir test_folder", "Remove the test folder"),
+    ("which python", "Find where Python is installed"),
+    ("python --version", "Check your Python version"),
+    ("pip list | head -10", "Show first 10 installed Python packages"),
+    ("git status", "Check if you're in a git repository"),
+    ("uptime", "Show how long the system has been running"),
+]
+
+HELP_TEXT = """[bold green]Terminal Translator \u2014 Help[/]
+
+[bold]What is this?[/]
+This tool sits alongside a real terminal shell. You type commands
+on the left, and plain-language explanations appear on the right
+automatically. No copy-paste needed!
+
+[bold]How to use it:[/]
+  1. Type a command in the input box on the left and press Enter
+  2. The command runs in a real shell
+  3. An explanation appears on the right automatically
+
+[bold]Quick-try commands:[/]
+  Type [bold cyan]try[/] to see a list of beginner-friendly commands
+  Type [bold cyan]try 1[/] through [bold cyan]try 25[/] to auto-run one
+
+[bold]Keyboard shortcuts:[/]
+  [dim]Ctrl+B[/]  Toggle between Beginner and Familiar mode
+  [dim]Ctrl+T[/]  Toggle AI translations on/off
+  [dim]Ctrl+L[/]  Clear the translation panel
+  [dim]Ctrl+Q[/]  Quit the app
+
+[bold]Tip:[/]
+  All 25 starter commands are safe to run. They won't break
+  anything and are great for learning!
+
+[bold]Modes:[/]
+  [green]Beginner[/]   Very detailed, assumes no prior knowledge
+  [yellow]Familiar[/]   Concise, assumes you know the basics
+
+[bold]How translations work:[/]
+  1. Your command/output is checked against a built-in knowledge
+     base of 79 commands and 20+ common error patterns
+  2. If no match is found, AI provides a detailed explanation
+  3. Toggle AI off with Ctrl+T for offline/local-only mode
+
+[dim]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500[/]"""
+
+TRY_LIST_TEXT_HEADER = """[bold cyan]Quick-Try Commands[/]
+[dim]Type \"try N\" to run a command (e.g. \"try 1\")[/]
+"""
+
 
 def strip_ansi(text):
     return ANSI_ESCAPE.sub("", text)
@@ -126,18 +196,8 @@ class ShellProcess:
             self.pid = None
 
 
-class TranslationPanel(Static):
-    pass
-
-
 class ShellOutput(RichLog):
     pass
-
-
-class OutputReceived(Message):
-    def __init__(self, text: str) -> None:
-        self.text = text
-        super().__init__()
 
 
 class TerminalTranslator(App):
@@ -244,8 +304,9 @@ class TerminalTranslator(App):
     SUB_TITLE = "Type commands in the shell \u2014 get plain-language explanations"
 
     BINDINGS = [
-        Binding("ctrl+b", "toggle_mode", "Toggle Beginner/Familiar"),
+        Binding("ctrl+b", "toggle_mode", "Beginner/Familiar"),
         Binding("ctrl+t", "toggle_ai", "Toggle AI"),
+        Binding("ctrl+l", "clear_translations", "Clear Translations"),
         Binding("ctrl+q", "quit", "Quit"),
     ]
 
@@ -261,6 +322,7 @@ class TerminalTranslator(App):
         self._last_command = ""
         self._pending_lines = []
         self._translation_id = 0
+        self._shown_welcome = False
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -270,7 +332,7 @@ class TerminalTranslator(App):
                     yield Label("SHELL", id="shell-title")
                     yield ShellOutput(id="shell-output", highlight=False, markup=False, wrap=True)
                     yield Input(
-                        placeholder="Type your command here and press Enter...",
+                        placeholder="Type a command and press Enter (or type 'help')",
                         id="shell-input",
                     )
             with Container(id="translation-panel"):
@@ -309,14 +371,80 @@ class TerminalTranslator(App):
         self.shell.start()
         shell_input = self.query_one("#shell-input", Input)
         shell_input.focus()
+        self._show_welcome()
 
+    def _show_welcome(self) -> None:
         trans = self.query_one("#translation-output", RichLog)
-        trans.write("[bold green]Welcome to Terminal Translator![/]\n")
-        trans.write("Type commands in the shell on the left.\n")
-        trans.write("Explanations will appear here automatically.\n\n")
-        trans.write("[dim]Ctrl+B: Toggle Beginner/Familiar mode[/]\n")
-        trans.write("[dim]Ctrl+T: Toggle AI on/off[/]\n")
-        trans.write("[dim]Ctrl+Q: Quit[/]\n")
+        trans.write("[bold green]Welcome to Terminal Translator![/]")
+        trans.write("")
+        trans.write("This tool explains everything that happens in your")
+        trans.write("terminal, in plain language. No experience needed!")
+        trans.write("")
+        trans.write("[bold]Get started:[/]")
+        trans.write("  Type [bold cyan]try 1[/] to run your first command")
+        trans.write("  Type [bold cyan]try[/] to see all beginner commands")
+        trans.write("  Type [bold cyan]help[/] for full instructions")
+        trans.write("")
+        trans.write("[bold]Try these yourself:[/]")
+        trans.write(f"  [cyan]1.[/] [bold]{STARTER_COMMANDS[0][0]}[/] \u2014 {STARTER_COMMANDS[0][1]}")
+        trans.write(f"  [cyan]2.[/] [bold]{STARTER_COMMANDS[1][0]}[/] \u2014 {STARTER_COMMANDS[1][1]}")
+        trans.write(f"  [cyan]3.[/] [bold]{STARTER_COMMANDS[2][0]}[/] \u2014 {STARTER_COMMANDS[2][1]}")
+        trans.write(f"  [cyan]4.[/] [bold]{STARTER_COMMANDS[3][0]}[/] \u2014 {STARTER_COMMANDS[3][1]}")
+        trans.write(f"  [cyan]5.[/] [bold]{STARTER_COMMANDS[4][0]}[/] \u2014 {STARTER_COMMANDS[4][1]}")
+        trans.write("")
+        trans.write("[dim]Ctrl+B: Mode  |  Ctrl+T: AI  |  Ctrl+L: Clear  |  Ctrl+Q: Quit[/]")
+        trans.write("[dim]" + "\u2500" * 50 + "[/]")
+        self._shown_welcome = True
+
+    def _show_try_list(self) -> None:
+        trans = self.query_one("#translation-output", RichLog)
+        trans.write("")
+        trans.write(TRY_LIST_TEXT_HEADER)
+        trans.write("")
+        for i, (cmd, desc) in enumerate(STARTER_COMMANDS, 1):
+            trans.write(f"  [cyan]{i:2d}.[/] [bold]{cmd}[/]")
+            trans.write(f"      [dim]{desc}[/]")
+        trans.write("")
+        trans.write("[dim]" + "\u2500" * 50 + "[/]")
+
+    def _show_help(self) -> None:
+        trans = self.query_one("#translation-output", RichLog)
+        trans.write("")
+        for line in HELP_TEXT.split("\n"):
+            trans.write(line)
+
+    def _handle_app_command(self, command: str) -> bool:
+        cmd = command.strip().lower()
+
+        if cmd == "help":
+            self._show_help()
+            return True
+
+        if cmd == "try":
+            self._show_try_list()
+            return True
+
+        try_match = re.match(r"^try\s+(\d+)$", cmd)
+        if try_match:
+            num = int(try_match.group(1))
+            if 1 <= num <= len(STARTER_COMMANDS):
+                actual_cmd = STARTER_COMMANDS[num - 1][0]
+                desc = STARTER_COMMANDS[num - 1][1]
+                trans = self.query_one("#translation-output", RichLog)
+                trans.write("")
+                trans.write(f"[bold cyan]Running:[/] {actual_cmd}")
+                trans.write(f"[dim]{desc}[/]")
+                trans.write("")
+                self._last_command = actual_cmd
+                if self.shell and self.shell.running:
+                    self.shell.send_line(actual_cmd)
+                return True
+            else:
+                trans = self.query_one("#translation-output", RichLog)
+                trans.write(f"[yellow]No command #{num}. Type 'try' to see the list (1-{len(STARTER_COMMANDS)}).[/]")
+                return True
+
+        return False
 
     def _on_shell_output(self, text: str) -> None:
         self.call_from_thread(self._handle_output, text)
@@ -420,6 +548,12 @@ class TerminalTranslator(App):
             command = event.value
             event.input.clear()
 
+            if not command.strip():
+                return
+
+            if self._handle_app_command(command):
+                return
+
             if self.shell and self.shell.running:
                 self._last_command = command
                 self.shell.send_line(command)
@@ -447,6 +581,16 @@ class TerminalTranslator(App):
         ai_label.update(f"AI: {'ON' if self.use_ai else 'OFF'}")
         status = self.query_one("#status-label", Label)
         status.update(f"AI {'enabled' if self.use_ai else 'disabled'}")
+
+    def action_clear_translations(self) -> None:
+        self._pending_lines.clear()
+        if self._debounce_task is not None:
+            self._debounce_task.cancel()
+            self._debounce_task = None
+        self._translation_id += 1
+        trans = self.query_one("#translation-output", RichLog)
+        trans.clear()
+        trans.write("[dim]Translation panel cleared. Type a command to continue.[/]")
 
     def on_unmount(self) -> None:
         if self.shell:

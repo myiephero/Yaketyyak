@@ -205,6 +205,122 @@ DEFAULT_KNOWLEDGE_BASE = {
         "history": {
             "beginner": "This shows a list of all the commands you've typed recently. You can re-run a previous command by typing '!' followed by its number.",
             "familiar": "Show command history. !n to re-run command n, !! for last command, !string for last command starting with string."
+        },
+        "date": {
+            "beginner": "This shows the current date and time on your computer. You can also use it to display dates in different formats.",
+            "familiar": "Display or set system date/time. Use +FORMAT for custom output (e.g., date '+%Y-%m-%d')."
+        },
+        "whoami": {
+            "beginner": "This shows your current username \u2014 the name your computer knows you by. Useful when you're not sure which account you're logged into.",
+            "familiar": "Print effective user ID / username."
+        },
+        "uname": {
+            "beginner": "This shows information about your operating system. 'uname -a' shows everything: OS name, version, computer type, and more.",
+            "familiar": "Print system info. -a for all, -s for OS name, -r for kernel release, -m for machine type."
+        },
+        "df": {
+            "beginner": "This shows how much disk space you have available on your computer. 'df -h' makes the numbers easy to read (like '50G' instead of a huge number).",
+            "familiar": "Report filesystem disk space usage. -h for human-readable, -i for inodes, -T for filesystem type."
+        },
+        "free": {
+            "beginner": "This shows how much memory (RAM) your computer has and how much is being used. 'free -h' makes it easy to read.",
+            "familiar": "Display memory usage. -h for human-readable, -g for gigabytes, -s N for continuous monitoring every N seconds."
+        },
+        "uptime": {
+            "beginner": "This shows how long your computer has been running since it was last turned on, plus the system load (how busy it is).",
+            "familiar": "Show system uptime and load averages (1, 5, 15 min). Load > number of CPUs indicates saturation."
+        },
+        "less": {
+            "beginner": "This lets you scroll through a file page by page (unlike 'cat' which dumps everything at once). Press 'q' to quit, arrow keys to scroll, '/' to search.",
+            "familiar": "Pager for viewing files. q to quit, / to search, n/N for next/prev match, g/G for top/bottom."
+        },
+        "sort": {
+            "beginner": "This arranges lines of text in order (alphabetically by default). 'sort -n' sorts by number, 'sort -r' sorts in reverse.",
+            "familiar": "Sort lines of text. -n for numeric, -r for reverse, -k for key field, -u for unique, -t for delimiter."
+        },
+        "uniq": {
+            "beginner": "This removes duplicate lines that are next to each other. Usually used after 'sort' to get only unique lines.",
+            "familiar": "Filter adjacent duplicate lines. -c for count, -d to show only duplicates, -u for unique only. Requires sorted input."
+        },
+        "sed": {
+            "beginner": "This is a text editor that works on streams of text (not interactively). It's most commonly used to find and replace text in files, like 'sed s/old/new/g file.txt'.",
+            "familiar": "Stream editor. Common: s/pattern/replacement/g for substitution, -i for in-place edit, -E for extended regex."
+        },
+        "awk": {
+            "beginner": "This is a powerful text-processing tool that works on columns of data. It can pick out specific columns, do math, and filter lines.",
+            "familiar": "Pattern scanning and processing. '{print $1}' for first column, -F for delimiter, supports conditions and functions."
+        },
+        "xargs": {
+            "beginner": "This takes a list of items (usually from another command) and runs a command on each one. It's like a 'for each' loop in the terminal.",
+            "familiar": "Build and execute commands from stdin. -I{} for placeholder, -P for parallel, -n for max args per command."
+        },
+        "tee": {
+            "beginner": "This sends output to both the screen AND a file at the same time. Useful when you want to see output and save it too.",
+            "familiar": "Read stdin and write to both stdout and files. -a to append instead of overwrite."
+        },
+        "diff": {
+            "beginner": "This compares two files and shows you exactly what's different between them. Lines with '<' are from the first file, '>' from the second.",
+            "familiar": "Compare files line by line. -u for unified format, -r for recursive (directories), --color for colored output."
+        },
+        "ln": {
+            "beginner": "This creates a link (shortcut) to a file or folder. 'ln -s target linkname' creates a symbolic link, like a shortcut on your desktop.",
+            "familiar": "Create hard or symbolic links. -s for symbolic (soft) link, -f to force overwrite. Symlinks are more common."
+        },
+        "du": {
+            "beginner": "This shows how much disk space files and folders are using. 'du -sh *' gives you a nice summary of each item in the current folder.",
+            "familiar": "Estimate file/directory space usage. -s for summary, -h for human-readable, --max-depth=N to limit depth."
+        },
+        "tree": {
+            "beginner": "This shows all the files and folders in a nice tree-like diagram, so you can see the whole structure at a glance.",
+            "familiar": "List directory contents in tree format. -L N for depth limit, -a for hidden files, -d for directories only."
+        },
+        "htop": {
+            "beginner": "This is a prettier, more interactive version of 'top'. It shows all running programs and resource usage with color coding. Press 'q' to quit, F9 to kill a process.",
+            "familiar": "Interactive process viewer. Better than top. F5 for tree view, F6 to sort, F9 to kill, / to search."
+        },
+        "nano": {
+            "beginner": "This opens a simple text editor right in your terminal. It's the easiest terminal text editor for beginners. The commands are shown at the bottom (^ means Ctrl).",
+            "familiar": "Simple terminal text editor. Ctrl+O to save, Ctrl+X to exit, Ctrl+W to search, Ctrl+K to cut line."
+        },
+        "vim": {
+            "beginner": "This is a powerful text editor in your terminal. It can be confusing at first! Press 'i' to start typing, 'Esc' to stop typing, then ':wq' and Enter to save and quit. To quit without saving: ':q!' and Enter.",
+            "familiar": "Modal text editor. i for insert mode, Esc for normal mode, :w to save, :q to quit, :wq to save+quit, /pattern to search."
+        },
+        "ping": {
+            "beginner": "This checks if you can reach another computer or website over the internet. It sends small packets and measures how long they take to come back. Press Ctrl+C to stop.",
+            "familiar": "Send ICMP echo requests. -c N for count, -i N for interval. Ctrl+C to stop. Useful for connectivity testing."
+        },
+        "ifconfig": {
+            "beginner": "This shows your computer's network connections and IP addresses. It tells you how your computer is connected to networks.",
+            "familiar": "Display/configure network interfaces. Deprecated in favor of 'ip addr' on modern Linux."
+        },
+        "ip": {
+            "beginner": "This is the modern way to see and configure your computer's network settings. 'ip addr' shows your IP addresses, 'ip route' shows how traffic flows.",
+            "familiar": "Show/manipulate networking. 'ip addr' for addresses, 'ip route' for routing, 'ip link' for interfaces."
+        },
+        "netstat": {
+            "beginner": "This shows all the network connections your computer currently has open. Useful to see what programs are using the network.",
+            "familiar": "Network statistics. -tlnp for listening TCP with PIDs, -an for all connections. Consider 'ss' as modern replacement."
+        },
+        "zip": {
+            "beginner": "This compresses files into a .zip archive (like right-clicking and choosing 'Compress' on your desktop). 'unzip' extracts them.",
+            "familiar": "Create zip archives. -r for recursive (directories), unzip to extract, -l to list contents."
+        },
+        "scp": {
+            "beginner": "This copies files securely between your computer and another computer over the internet. It works like 'cp' but across machines.",
+            "familiar": "Secure copy over SSH. scp file user@host:path for upload, scp user@host:file . for download. -r for directories."
+        },
+        "crontab": {
+            "beginner": "This lets you schedule commands to run automatically at specific times (like setting an alarm). 'crontab -l' shows your scheduled tasks, 'crontab -e' lets you edit them.",
+            "familiar": "Manage cron jobs. -l to list, -e to edit, -r to remove. Format: min hour day month weekday command."
+        },
+        "alias": {
+            "beginner": "This creates a shortcut for a longer command. For example, 'alias ll=ls -la' lets you type just 'll' instead of 'ls -la'.",
+            "familiar": "Create command shortcuts. Add to ~/.bashrc for persistence. 'unalias' to remove. 'alias' alone lists all."
+        },
+        "nslookup": {
+            "beginner": "This looks up the IP address of a website. For example, 'nslookup google.com' shows you the actual server addresses behind that name.",
+            "familiar": "Query DNS records. Alternative: dig. Shows A, AAAA, MX records etc."
         }
     },
     "error_patterns": {
@@ -377,7 +493,11 @@ def ensure_knowledge_base_exists(path=None):
     kb_path = path or DEFAULT_KB_PATH
     if not os.path.exists(kb_path):
         save_knowledge_base(DEFAULT_KNOWLEDGE_BASE, kb_path)
-    return load_knowledge_base(kb_path)
+        return load_knowledge_base(kb_path)
+    kb = load_knowledge_base(kb_path)
+    if _merge_kb(kb, DEFAULT_KNOWLEDGE_BASE):
+        save_knowledge_base(kb, kb_path)
+    return kb
 
 
 def lookup_command(text, kb, mode="beginner"):
@@ -390,6 +510,20 @@ def lookup_command(text, kb, mode="beginner"):
         if first_word == cmd.split()[0]:
             return explanations.get(mode, explanations.get("beginner", ""))
     return None
+
+
+def _merge_kb(existing, defaults):
+    changed = False
+    for section in ["commands", "error_patterns", "output_patterns"]:
+        if section not in defaults:
+            continue
+        if section not in existing:
+            existing[section] = {}
+        for key, value in defaults[section].items():
+            if key not in existing[section]:
+                existing[section][key] = value
+                changed = True
+    return changed
 
 
 def _safe_regex_search(pattern, text):

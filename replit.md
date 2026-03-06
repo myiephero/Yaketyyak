@@ -11,9 +11,9 @@ A split-pane TUI (Text User Interface) tool that translates terminal/CLI output 
 
 ## Key Files
 
-- `app.py` — Main Textual TUI application with shell integration, pty management, and UI
+- `app.py` — Main Textual TUI application with shell integration, pty management, UI, welcome tutorial, starter commands, and help system
 - `translator.py` — Translation engine with local KB lookup and AI fallback (OpenAI GPT-5)
-- `knowledge_base.py` — Local knowledge base with 40+ commands, 20+ error patterns, output patterns
+- `knowledge_base.py` — Local knowledge base with 79 commands, 20+ error patterns, output patterns
 - `terminal_knowledge_base.json` — User-editable JSON file (auto-generated on first run)
 
 ## How It Works
@@ -28,17 +28,28 @@ A split-pane TUI (Text User Interface) tool that translates terminal/CLI output 
 
 - **Split-pane TUI**: Real shell on left, live translations on right
 - **No copy-paste**: Commands run in a real shell, output captured automatically via pty
+- **Welcome tutorial**: Guided introduction on launch with 5 suggested commands
+- **25 starter commands**: Type `try` to see list, `try N` to auto-run one
+- **Built-in help**: Type `help` for full instructions
 - **Beginner / Familiar modes** (Ctrl+B to toggle)
 - **AI toggle** (Ctrl+T) — disable AI for offline/local-only use
+- **Clear translations** (Ctrl+L) — clear the translation panel
 - **8 languages** for AI translations: EN, ES, FR, DE, ZH, JA, PT, KO
-- **40+ commands** and **20+ error patterns** in local knowledge base
+- **79 commands** and **20+ error patterns** in local knowledge base
 - **Debounced translation** — waits for output to settle before translating
 - **Cross-platform** — works on macOS, Linux, Windows WSL
+
+## In-App Commands
+
+- `help` — Show full help/instructions
+- `try` — Show all 25 beginner-friendly starter commands
+- `try N` — Auto-run starter command number N (1-25)
 
 ## Keyboard Shortcuts
 
 - **Ctrl+B**: Toggle Beginner/Familiar mode
 - **Ctrl+T**: Toggle AI on/off
+- **Ctrl+L**: Clear translation panel
 - **Ctrl+Q**: Quit
 
 ## Dependencies
