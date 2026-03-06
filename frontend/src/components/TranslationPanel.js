@@ -69,10 +69,10 @@ export const TranslationPanel = ({ result, isLoading }) => {
             )}
             
             {/* Lookup time for local results */}
-            {result.lookup_time_ms !== undefined && (
+            {result.lookup_time_ms != null && (
               <div className="flex items-center gap-1 text-xs text-slate-500">
                 <Clock className="w-3 h-3" />
-                {result.lookup_time_ms.toFixed(2)}ms
+                {Number(result.lookup_time_ms).toFixed(2)}ms
               </div>
             )}
             

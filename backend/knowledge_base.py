@@ -336,9 +336,11 @@ def lookup(text: str, mode: str = "beginner") -> Optional[Dict]:
     start_time = time.perf_counter()
     text_lower = text.lower().strip()
     
-    # 1. Direct match in knowledge base
-    for key, explanations in KNOWLEDGE_BASE.items():
+    # 1. Direct match in knowledge base (sorted by length, longest first for specificity)
+    sorted_keys = sorted(KNOWLEDGE_BASE.keys(), key=len, reverse=True)
+    for key in sorted_keys:
         if key.lower() in text_lower:
+            explanations = KNOWLEDGE_BASE[key]
             elapsed = (time.perf_counter() - start_time) * 1000  # Convert to ms
             return {
                 "explanation": explanations.get(mode, explanations["beginner"]),
