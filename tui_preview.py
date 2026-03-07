@@ -189,8 +189,8 @@ body {
 <body class="terminal" id="app">
 
 <div class="theme-switch">
-    <button class="active" onclick="setTheme('terminal')">Terminal</button>
-    <button onclick="setTheme('glass')">Glass</button>
+    <button class="active" id="btn-terminal" onclick="setTheme('terminal')">&#9654; Terminal</button>
+    <button id="btn-glass" onclick="setTheme('glass')">Glass</button>
 </div>
 
 <div class="header">Terminal Translator</div>
@@ -282,7 +282,7 @@ body {
     <span>Lang:</span>
     <select><option>English</option><option>Spanish</option><option>French</option><option>German</option><option>Japanese</option><option>Chinese</option><option>Korean</option><option>Portuguese</option></select>
     <span class="accent">AI: Ollama</span>
-    <span class="accent">Theme: Terminal</span>
+    <span class="accent" id="theme-label">Theme: Terminal</span>
     <span class="dim" style="margin-left:auto;">Ready</span>
 </div>
 
@@ -293,9 +293,12 @@ body {
 <script>
 function setTheme(theme) {
     document.getElementById('app').className = theme;
-    document.querySelectorAll('.theme-switch button').forEach(b => b.classList.remove('active'));
-    event.target.classList.add('active');
-    var themeLabel = document.querySelector('.settings-bar .accent:nth-child(5)');
+    document.querySelectorAll('.theme-switch button').forEach(function(b) {
+        b.classList.remove('active');
+        b.textContent = b.id === 'btn-' + theme ? '\u25B6 ' + (b.id === 'btn-terminal' ? 'Terminal' : 'Glass') : (b.id === 'btn-terminal' ? 'Terminal' : 'Glass');
+    });
+    document.getElementById('btn-' + theme).classList.add('active');
+    var themeLabel = document.getElementById('theme-label');
     if (themeLabel) themeLabel.textContent = 'Theme: ' + (theme === 'terminal' ? 'Terminal' : 'Glass');
 }
 </script>
