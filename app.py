@@ -155,7 +155,12 @@ class ShellProcess:
             env["TERM"] = "dumb"
             env["PS1"] = "$ "
             env["PROMPT_COMMAND"] = ""
-            os.execvpe(shell, [shell, "--norc", "--noprofile"], env)
+            shell_name = os.path.basename(shell)
+            if shell_name == "zsh":
+                shell_args = [shell, "-f", "--no-rcs"]
+            else:
+                shell_args = [shell, "--norc", "--noprofile"]
+            os.execvpe(shell, shell_args, env)
         else:
             os.close(slave_fd)
             self.running = True
