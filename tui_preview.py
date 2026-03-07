@@ -313,11 +313,11 @@ body {
 
 /* ═══ VIEW TOGGLE ═══ */
 .view-toggle {
-    display: flex; justify-content: center; padding: 6px 0 2px;
-    gap: 0;
+    display: flex; justify-content: center; padding: 6px 0 4px;
+    gap: 2px;
 }
 .view-toggle button {
-    padding: 5px 20px; border: none;
+    padding: 6px 22px; border: none;
     font-family: inherit; font-size: 11px; cursor: pointer;
     transition: all 0.25s var(--ease);
     font-weight: 600; letter-spacing: 0.5px;
@@ -326,12 +326,7 @@ body {
 }
 .view-toggle button:first-child { border-radius: 6px 0 0 6px; }
 .view-toggle button:last-child { border-radius: 0 6px 6px 0; }
-.view-toggle button::after {
-    content: ''; position: absolute; bottom: -2px; left: 20%; right: 20%;
-    height: 2px; border-radius: 1px;
-    transform: scaleX(0); transition: transform 0.25s var(--ease);
-}
-.view-toggle button.active::after { transform: scaleX(1); }
+.view-toggle button:hover { filter: brightness(1.15); }
 
 .main {
     display: flex; flex: 1; min-height: 0;
@@ -421,14 +416,15 @@ body {
 .s-spacer { flex: 1; }
 
 .footer {
-    text-align: center; padding: 5px 0;
-    font-size: 11px; letter-spacing: 0.3px;
+    text-align: center; padding: 4px 12px;
+    font-size: 10.5px; letter-spacing: 0.2px;
     transition: all var(--transition);
-    display: flex; justify-content: center; gap: 8px;
+    display: flex; justify-content: center; gap: 6px;
+    flex-wrap: wrap;
 }
 .footer .kbd {
-    padding: 2px 6px; border-radius: 3px;
-    font-size: 10px; font-weight: 600;
+    padding: 1px 5px; border-radius: 3px;
+    font-size: 9.5px; font-weight: 600;
     transition: all var(--transition);
 }
 
@@ -490,13 +486,19 @@ body {
 .line-content { flex: 1; white-space: pre-wrap; }
 
 /* ═══ GIT TRANSLATOR VIEW ═══ */
-#git-view { display: none; flex-direction: column; flex: 1; min-height: 0; padding: 6px; }
+#git-view {
+    display: none; flex-direction: column; flex: 1; min-height: 0; padding: 6px;
+    animation: fadeSlideUp 0.3s var(--ease) both;
+}
 #git-view.active { display: flex; }
-#terminal-view { display: none; }
+#terminal-view {
+    display: none;
+    animation: fadeSlideUp 0.3s var(--ease) both;
+}
 #terminal-view.active { display: flex; }
 
 .git-input-area {
-    display: flex; gap: 8px; padding: 8px;
+    display: flex; gap: 8px; padding: 10px 14px;
     align-items: center;
 }
 .git-input-area input {
@@ -518,6 +520,7 @@ body {
 .git-results {
     flex: 1; overflow-y: auto; padding: 8px;
     scroll-behavior: smooth;
+    min-height: 0;
 }
 
 .git-card {
@@ -570,8 +573,8 @@ body {
 
 .meta-grid {
     display: grid; grid-template-columns: 1fr 1fr;
-    gap: 4px 20px; font-size: 11px; margin-top: 10px;
-    padding-top: 10px;
+    gap: 4px 20px; font-size: 11px; margin-top: 12px;
+    padding-top: 12px;
 }
 .meta-grid .meta-key { opacity: 0.5; }
 .meta-grid .meta-val { font-weight: 600; }
@@ -663,7 +666,7 @@ body {
 .terminal .git-input-area input::placeholder { color: #475569; }
 .terminal .git-input-area input:focus { border-color: #10b98160; box-shadow: 0 0 12px #10b98115; }
 .terminal .git-input-area button { background: #10b981; color: #0a0e17; }
-.terminal .git-card { background: #0a0e17; border: 1px solid #1e293b40; }
+.terminal .git-card { background: #0d1420; border: 1px solid #1e293b40; }
 .terminal .git-card h2 { color: #10b981; }
 .terminal .kpi-item { background: #0d1420; border: 1px solid #1e293b30; }
 .terminal .kpi-item .kpi-val { color: #e2e8f0; }
@@ -672,6 +675,7 @@ body {
 .terminal .flag-section h3.reward-title { color: #10b981; }
 .terminal .flag-risk { color: #fca5a5; }
 .terminal .flag-reward { color: #6ee7b7; }
+.terminal .meta-grid { border-top: 1px solid #1e293b40; }
 .terminal .meta-grid .meta-val { color: #e2e8f0; }
 .terminal .meta-grid .meta-key { color: #64748b; }
 .terminal .topic-tag { background: #10b98115; color: #10b981; border: 1px solid #10b98125; }
@@ -753,6 +757,7 @@ body {
 .glass .flag-section h3.reward-title { color: #a78bfa; }
 .glass .flag-risk { color: #fca5a5; }
 .glass .flag-reward { color: #c4b5fd; }
+.glass .meta-grid { border-top: 1px solid #6366f118; }
 .glass .meta-grid .meta-val { color: #e0e7ff; }
 .glass .meta-grid .meta-key { color: #7c6bbf; }
 .glass .topic-tag { background: rgba(167, 139, 250, 0.12); color: #a78bfa; border: 1px solid #a78bfa25; }
@@ -771,15 +776,26 @@ body {
     animation: fadeSlideUp 0.4s var(--ease) both;
 }
 .animate-in:nth-child(1) { animation-delay: 0s; }
-.animate-in:nth-child(2) { animation-delay: 0.05s; }
-.animate-in:nth-child(3) { animation-delay: 0.1s; }
-.animate-in:nth-child(4) { animation-delay: 0.15s; }
-.animate-in:nth-child(5) { animation-delay: 0.2s; }
-.animate-in:nth-child(6) { animation-delay: 0.25s; }
-.animate-in:nth-child(7) { animation-delay: 0.3s; }
-.animate-in:nth-child(8) { animation-delay: 0.35s; }
-.animate-in:nth-child(9) { animation-delay: 0.4s; }
-.animate-in:nth-child(10) { animation-delay: 0.45s; }
+.animate-in:nth-child(2) { animation-delay: 0.04s; }
+.animate-in:nth-child(3) { animation-delay: 0.08s; }
+.animate-in:nth-child(4) { animation-delay: 0.12s; }
+.animate-in:nth-child(5) { animation-delay: 0.16s; }
+.animate-in:nth-child(6) { animation-delay: 0.2s; }
+.animate-in:nth-child(7) { animation-delay: 0.24s; }
+.animate-in:nth-child(8) { animation-delay: 0.28s; }
+.animate-in:nth-child(9) { animation-delay: 0.32s; }
+.animate-in:nth-child(10) { animation-delay: 0.36s; }
+.animate-in:nth-child(11) { animation-delay: 0.4s; }
+.animate-in:nth-child(12) { animation-delay: 0.44s; }
+.animate-in:nth-child(13) { animation-delay: 0.48s; }
+.animate-in:nth-child(14) { animation-delay: 0.52s; }
+.animate-in:nth-child(15) { animation-delay: 0.56s; }
+.animate-in:nth-child(16) { animation-delay: 0.6s; }
+.animate-in:nth-child(17) { animation-delay: 0.64s; }
+.animate-in:nth-child(18) { animation-delay: 0.68s; }
+.animate-in:nth-child(19) { animation-delay: 0.72s; }
+.animate-in:nth-child(20) { animation-delay: 0.76s; }
+.animate-in:nth-child(n+21) { animation-delay: 0.8s; }
 
 .panel, .panel-title, .panel-content, .shell-input-row,
 .settings-bar, .footer, .header, .cmd-header, .trans-section,
@@ -979,25 +995,28 @@ body {
 
 <!-- ═══════════════ GIT TRANSLATOR VIEW ═══════════════ -->
 <div id="git-view">
-    <div class="git-input-area">
-        <input type="text" id="git-url-input" placeholder="https://github.com/owner/repo" spellcheck="false">
-        <button id="git-analyze-btn" onclick="analyzeRepo()">Analyze</button>
-    </div>
+    <div class="panel git-panel" style="flex:1;min-height:0;">
+        <div class="panel-title trans-title">GIT TRANSLATOR</div>
+        <div class="git-input-area">
+            <input type="text" id="git-url-input" placeholder="https://github.com/owner/repo" spellcheck="false">
+            <button id="git-analyze-btn" onclick="analyzeRepo()">Analyze</button>
+        </div>
 
-    <div class="git-loading" id="git-loading">
-        <div class="spinner"></div>
-        <div class="loading-text">Analyzing repository...</div>
-    </div>
+        <div class="git-loading" id="git-loading">
+            <div class="spinner"></div>
+            <div class="loading-text">Analyzing repository...</div>
+        </div>
 
-    <div class="git-error" id="git-error">
-        <div class="err-icon">&#9888;</div>
-        <div class="err-text" id="git-error-text"></div>
-    </div>
+        <div class="git-error" id="git-error">
+            <div class="err-icon">&#9888;</div>
+            <div class="err-text" id="git-error-text"></div>
+        </div>
 
-    <div class="git-results" id="git-results">
-        <div class="git-placeholder" id="git-placeholder">
-            <div class="ph-icon">&#128269;</div>
-            <div class="ph-text">Paste any GitHub URL above to get a<br>full risk/reward analysis before you clone</div>
+        <div class="git-results" id="git-results">
+            <div class="git-placeholder" id="git-placeholder">
+                <div class="ph-icon">&#128269;</div>
+                <div class="ph-text">Paste any GitHub URL above to get a<br>full risk/reward analysis before you clone</div>
+            </div>
         </div>
     </div>
 </div>
@@ -1039,15 +1058,14 @@ body {
         var btnT = document.getElementById('btn-terminal-view');
         var btnG = document.getElementById('btn-git-view');
         if (v === 'git') {
-            tv.style.display = 'none';
-            gv.style.display = 'flex';
+            tv.classList.remove('active');
             gv.classList.add('active');
             btnT.classList.remove('active');
             btnG.classList.add('active');
+            setTimeout(function() { document.getElementById('git-url-input').focus(); }, 100);
         } else {
-            tv.style.display = 'flex';
-            gv.style.display = 'none';
             gv.classList.remove('active');
+            tv.classList.add('active');
             btnT.classList.add('active');
             btnG.classList.remove('active');
         }
