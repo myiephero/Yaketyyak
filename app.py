@@ -67,7 +67,7 @@ STARTER_COMMANDS = [
     ("uptime", "Show how long the system has been running"),
 ]
 
-HELP_TEXT = """[bold green]Terminal Translator \u2014 Help[/]
+HELP_TEXT = """[bold green]Yakety Yak \u2014 Help[/]
 
 [bold]What is this?[/]
 This tool sits alongside a real terminal shell. You type commands
@@ -222,11 +222,11 @@ class ShellOutput(RichLog):
     pass
 
 
-class TerminalTranslator(App):
+class YaketyYak(App):
 
     CSS = APP_CSS
 
-    TITLE = "Terminal Translator"
+    TITLE = "Yakety Yak"
     SUB_TITLE = "Type commands in the shell \u2014 get plain-language explanations"
 
     BINDINGS = [
@@ -324,7 +324,7 @@ class TerminalTranslator(App):
 
     def _show_welcome(self) -> None:
         trans = self.query_one("#translation-output", RichLog)
-        trans.write("[bold green]Welcome to Terminal Translator![/]")
+        trans.write("[bold green]Welcome to Yakety Yak![/]")
         trans.write("")
         trans.write("This tool explains everything that happens in your")
         trans.write("terminal, in plain language. No experience needed!")
@@ -538,7 +538,7 @@ class TerminalTranslator(App):
             api_url = f"https://api.github.com/repos/{owner}/{repo}"
             req = urllib.request.Request(api_url, headers={
                 "Accept": "application/vnd.github.v3+json",
-                "User-Agent": "TerminalTranslator/1.0",
+                "User-Agent": "YaketyYak/1.0",
             })
             with urllib.request.urlopen(req, timeout=10) as resp:
                 data = json.loads(resp.read())
@@ -829,5 +829,5 @@ class TerminalTranslator(App):
 
 
 if __name__ == "__main__":
-    app = TerminalTranslator()
+    app = YaketyYak()
     app.run()

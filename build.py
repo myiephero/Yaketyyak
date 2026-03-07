@@ -9,9 +9,9 @@ import plistlib
 import argparse
 
 
-APP_NAME = "Terminal Translator"
-EXECUTABLE_NAME = "terminal-translator"
-BUNDLE_ID = "com.terminaltranslator.app"
+APP_NAME = "Yakety Yak"
+EXECUTABLE_NAME = "yakety-yak"
+BUNDLE_ID = "com.yaketyyak.app"
 VERSION = "1.0.0"
 OLLAMA_MODEL = "qwen2.5-coder:1.5b"
 
@@ -38,12 +38,12 @@ HIDDEN_IMPORTS = [
 def build_executable():
     system = platform.system().lower()
     if system == "windows":
-        print("Error: Terminal Translator requires a Unix-like terminal (pty, fork).")
+        print("Error: Yakety Yak requires a Unix-like terminal (pty, fork).")
         print("It works on macOS, Linux, and Windows WSL.")
         print("To build for Windows, use WSL (Windows Subsystem for Linux).")
         sys.exit(1)
 
-    print(f"Building Terminal Translator for {platform.system()} ({platform.machine()})...")
+    print(f"Building Yakety Yak for {platform.system()} ({platform.machine()})...")
 
     cmd = [
         sys.executable, "-m", "PyInstaller",
@@ -124,7 +124,7 @@ fi
         "LSMinimumSystemVersion": "10.15",
         "NSHighResolutionCapable": True,
         "LSApplicationCategoryType": "public.app-category.developer-tools",
-        "NSHumanReadableCopyright": f"Terminal Translator {VERSION}",
+        "NSHumanReadableCopyright": f"Yakety Yak {VERSION}",
     }
 
     with open(os.path.join(contents_dir, "Info.plist"), "wb") as f:
@@ -217,7 +217,7 @@ echo "Uninstalling {APP_NAME}..."
 
 rm -f "$HOME/.local/bin/{EXECUTABLE_NAME}"
 rm -f "$HOME/.local/share/applications/{EXECUTABLE_NAME}.desktop"
-rm -rf "$HOME/.terminal-translator"
+rm -rf "$HOME/.yakety-yak"
 
 if command -v update-desktop-database &> /dev/null; then
     update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
@@ -240,7 +240,7 @@ def create_ollama_setup_scripts(output_dir):
 set -e
 
 echo "====================================="
-echo "  Terminal Translator - AI Setup"
+echo "  Yakety Yak - AI Setup"
 echo "====================================="
 echo ""
 
@@ -276,11 +276,11 @@ echo "====================================="
 echo "  AI Setup Complete!"
 echo "====================================="
 echo ""
-echo "You can now open Terminal Translator."
+echo "You can now open Yakety Yak."
 echo "AI translations are ready to go!"
 echo ""
 echo "Ollama will start automatically when you"
-echo "open Terminal Translator."
+echo "open Yakety Yak."
 echo ""
 """)
     _make_executable(setup_mac)
@@ -291,7 +291,7 @@ echo ""
 set -e
 
 echo "====================================="
-echo "  Terminal Translator - AI Setup"
+echo "  Yakety Yak - AI Setup"
 echo "====================================="
 echo ""
 
@@ -321,7 +321,7 @@ echo "====================================="
 echo "  AI Setup Complete!"
 echo "====================================="
 echo ""
-echo "You can now open Terminal Translator."
+echo "You can now open Yakety Yak."
 echo "AI translations are ready to go!"
 echo ""
 echo "To start Ollama on boot, run:"
@@ -339,7 +339,7 @@ def _make_executable(path):
 
 
 def build():
-    parser = argparse.ArgumentParser(description="Build Terminal Translator")
+    parser = argparse.ArgumentParser(description="Build Yakety Yak")
     parser.add_argument("--lite", action="store_true", help="Build Lite edition only (no AI setup)")
     parser.add_argument("--full", action="store_true", help="Build Full edition with AI setup scripts")
     args = parser.parse_args()

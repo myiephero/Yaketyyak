@@ -6,20 +6,20 @@ INSTALL_DIR="$HOME/.local"
 BIN_DIR="$INSTALL_DIR/bin"
 APPS_DIR="$INSTALL_DIR/share/applications"
 
-echo "Installing Terminal Translator..."
+echo "Installing Yakety Yak..."
 echo ""
 
 mkdir -p "$BIN_DIR"
 mkdir -p "$APPS_DIR"
 
-cp "$SCRIPT_DIR/bin/terminal-translator" "$BIN_DIR/terminal-translator"
-chmod +x "$BIN_DIR/terminal-translator"
+cp "$SCRIPT_DIR/bin/yakety-yak" "$BIN_DIR/yakety-yak"
+chmod +x "$BIN_DIR/yakety-yak"
 
-cat > "$APPS_DIR/terminal-translator.desktop" << 'DESKTOP'
+cat > "$APPS_DIR/yakety-yak.desktop" << 'DESKTOP'
 [Desktop Entry]
-Name=Terminal Translator
+Name=Yakety Yak
 Comment=Learn the terminal with real-time command explanations
-Exec=$HOME/.local/bin/terminal-translator
+Exec=$HOME/.local/bin/yakety-yak
 Terminal=true
 Type=Application
 Categories=Development;Education;
@@ -27,13 +27,13 @@ Keywords=terminal;cli;learn;translate;command;
 StartupNotify=false
 DESKTOP
 
-sed -i "s|\$HOME|$HOME|g" "$APPS_DIR/terminal-translator.desktop"
+sed -i "s|\$HOME|$HOME|g" "$APPS_DIR/yakety-yak.desktop"
 
 echo "Installed successfully!"
 echo ""
 echo "You can now:"
-echo "  1. Find 'Terminal Translator' in your application menu"
-echo "  2. Or run it from terminal: terminal-translator"
+echo "  1. Find 'Yakety Yak' in your application menu"
+echo "  2. Or run it from terminal: yakety-yak"
 echo ""
 
 if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then

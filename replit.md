@@ -1,4 +1,4 @@
-# Terminal Translator
+# Yakety Yak
 
 A split-pane TUI tool that translates terminal/CLI output into plain-language explanations in real time. Built with Python's Textual framework and pty for real shell integration. Includes a landing page for downloads and supports both local AI (Ollama) and cloud AI (OpenAI). Features two switchable visual themes (Terminal and Glass).
 
@@ -15,20 +15,26 @@ A split-pane TUI tool that translates terminal/CLI output into plain-language ex
 ## Key Files
 
 - `app.py` — Main Textual TUI application with shell integration, welcome tutorial, starter commands, help system, theme toggle
-- `themes.py` — Theme CSS definitions (Terminal + Glass), theme preference persistence to `~/.terminal-translator/preferences.json`
+- `themes.py` — Theme CSS definitions (Terminal + Glass), theme preference persistence to `~/.yakety-yak/preferences.json`
 - `translator.py` — Translation engine: local KB → Ollama → OpenAI fallback chain; auto-detects AI backends
-- `knowledge_base.py` — 507 commands, 52 error patterns, 6 output patterns; stores user KB at `~/.terminal-translator/` when bundled
+- `knowledge_base.py` — 507 commands, 52 error patterns, 6 output patterns; stores user KB at `~/.yakety-yak/` when bundled
 - `terminal_knowledge_base.json` — User-editable JSON (auto-generated on first run)
 - `build.py` — PyInstaller build script with --lite and --full modes; creates macOS .app, Linux .desktop, Ollama setup scripts
 - `server.py` — Flask web server for the landing/download page
+- `tui_preview.py` — Interactive UI preview with animated demo content, Git Translator view, theme toggle
 - `templates/index.html` — Landing page template with animated terminal demo, theme showcase, download cards
 - `static/style.css` — Landing page styles (dark theme, bento grid, glassmorphic elements)
+
+## GitHub Repo
+
+- **URL**: https://github.com/myiephero/Yaketyyak
+- **Branch**: replit
 
 ## Themes
 
 - **Terminal**: Dark background (#0a0e17), green accents (#10b981), sharp borders — classic hacker aesthetic
 - **Glass**: Deep indigo background (#0f0a2e), purple/blue accents (#6366f1, #a78bfa), rounded borders — iOS glassmorphic aesthetic
-- Toggle with Ctrl+S, preference saved to `~/.terminal-translator/preferences.json`
+- Toggle with Ctrl+S, preference saved to `~/.yakety-yak/preferences.json`
 - Landing page showcases both themes with interactive toggle preview
 
 ## Translation Priority
@@ -57,7 +63,7 @@ python build.py --full   # Full edition with Ollama setup scripts
 
 ## Workflows
 
-- **Landing Page** — `python server.py` (webview, port 5000) — download page
+- **TUI Preview** — `python tui_preview.py` (webview, port 5000) — interactive UI preview
 
 ## In-App Commands
 

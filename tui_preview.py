@@ -22,7 +22,7 @@ def analyze_repo(owner, repo):
     api_url = f"https://api.github.com/repos/{owner}/{repo}"
     headers = {
         "Accept": "application/vnd.github.v3+json",
-        "User-Agent": "TerminalTranslator/1.0",
+        "User-Agent": "YaketyYak/1.0",
     }
     req = urllib.request.Request(api_url, headers=headers)
     with urllib.request.urlopen(req, timeout=10) as resp:
@@ -260,7 +260,7 @@ HTML = r"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Terminal Translator — UI Preview</title>
+<title>Yakety Yak — UI Preview</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -821,7 +821,7 @@ body {
     <button id="btn-glass" onclick="setTheme('glass')">Glass</button>
 </div>
 
-<div class="header">Terminal Translator</div>
+<div class="header">Yakety Yak</div>
 
 <!-- VIEW TOGGLE -->
 <div class="view-toggle">
@@ -854,7 +854,7 @@ body {
                 <div class="shell-line animate-in"><span class="line-num">15</span><span class="line-content"><span class="output">user</span></span></div>
                 <div class="spacer"></div>
                 <div class="shell-line animate-in"><span class="line-num">16</span><span class="line-content"><span class="prompt">~ $</span> <span class="cmd">pwd</span></span></div>
-                <div class="shell-line animate-in"><span class="line-num">17</span><span class="line-content"><span class="output">/Users/user/projects/terminal-translator</span></span></div>
+                <div class="shell-line animate-in"><span class="line-num">17</span><span class="line-content"><span class="output">/Users/user/projects/yakety-yak</span></span></div>
             </div>
             <div class="scroll-fade" id="shell-scroll-fade"></div>
         </div>
@@ -869,7 +869,7 @@ body {
         <div class="panel-title trans-title">TRANSLATION</div>
         <div class="panel-content-wrap">
             <div class="panel-content" id="trans-content">
-                <div class="line animate-in"><span class="welcome-title">Welcome to Terminal Translator</span></div>
+                <div class="line animate-in"><span class="welcome-title">Welcome to Yakety Yak</span></div>
                 <div class="spacer"></div>
                 <div class="line animate-in">This tool explains everything that happens in your</div>
                 <div class="line animate-in">terminal, in plain language. No experience needed!</div>
@@ -986,7 +986,7 @@ body {
 
                 <div class="trans-section animate-in">
                     <div class="trans-section-title"><span class="icon">&#128065;</span> What you see</div>
-                    <div class="line"><span class="line-ref">Line 17</span> You're in <span class="cyan">/Users/user/projects/terminal-translator</span>. Think of it like the address of the folder you have open.</div>
+                    <div class="line"><span class="line-ref">Line 17</span> You're in <span class="cyan">/Users/user/projects/yakety-yak</span>. Think of it like the address of the folder you have open.</div>
                 </div>
             </div>
             <div class="scroll-fade" id="trans-scroll-fade"></div>

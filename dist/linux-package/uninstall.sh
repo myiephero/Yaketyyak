@@ -1,8 +1,8 @@
 #!/bin/bash
-echo "Uninstalling Terminal Translator..."
+echo "Uninstalling Yakety Yak..."
 
-rm -f "$HOME/.local/bin/terminal-translator"
-rm -f "$HOME/.local/share/applications/terminal-translator.desktop"
-rm -rf "$HOME/.terminal-translator"
+rm -f "$HOME/.local/bin/yakety-yak"
+rm -f "$HOME/.local/share/applications/yakety-yak.desktop"
+rm -rf "$HOME/.yakety-yak"
 
 echo "Uninstalled successfully!"
