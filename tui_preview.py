@@ -310,8 +310,9 @@ body {
     position: relative;
 }
 .header .header-logo {
-    width: 32px; height: 32px; border-radius: 7px;
-    object-fit: cover; flex-shrink: 0;
+    width: 36px; height: 36px; border-radius: 0;
+    object-fit: contain; flex-shrink: 0;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
 }
 .header::after {
     content: ''; position: absolute; bottom: 0; left: 5%; right: 5%;
@@ -828,7 +829,7 @@ body {
     <button id="btn-glass" onclick="setTheme('glass')">Glass</button>
 </div>
 
-<div class="header"><img src="/static/favicon-64.png" alt="" class="header-logo">Yakety Yak</div>
+<div class="header"><img src="/static/logo-icon.png" alt="" class="header-logo">Yakety Yak</div>
 
 <!-- VIEW TOGGLE -->
 <div class="view-toggle">
