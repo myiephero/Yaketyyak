@@ -304,15 +304,15 @@ body {
 
 .header {
     display: flex; align-items: center; justify-content: center; gap: 10px;
-    padding: 12px 0 10px; font-weight: 700;
+    padding: 14px 0 12px; font-weight: 700;
     font-size: 17px; letter-spacing: 2px; text-transform: uppercase;
     transition: all var(--transition);
     position: relative;
 }
 .header .header-logo {
-    width: 36px; height: 36px; border-radius: 0;
+    width: 48px; height: 48px; border-radius: 0;
     object-fit: contain; flex-shrink: 0;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35));
 }
 .header::after {
     content: ''; position: absolute; bottom: 0; left: 5%; right: 5%;
