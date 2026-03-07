@@ -314,6 +314,11 @@ body {
     object-fit: contain; flex-shrink: 0;
     filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35));
 }
+.header .header-prompt {
+    font-size: 20px; font-weight: 700;
+    margin-left: 2px; margin-right: 2px;
+    transition: color var(--transition);
+}
 .header::after {
     content: ''; position: absolute; bottom: 0; left: 5%; right: 5%;
     height: 1px; transition: background var(--transition);
@@ -628,6 +633,7 @@ body {
 /* ═══ TERMINAL THEME ═══ */
 .terminal { background: #060a13; color: #e2e8f0; }
 .terminal .header { background: #060a13; color: #10b981; }
+.terminal .header .header-prompt { color: #10b981; }
 .terminal .header::after { background: linear-gradient(90deg, transparent, #10b98140, transparent); }
 .terminal .panel { border: 1px solid #10b98130; background: #0a0e17; box-shadow: 0 0 0 1px #10b98108; }
 .terminal .panel.focus-glow { box-shadow: 0 0 20px #10b98115, 0 0 0 1px #10b98125; }
@@ -706,6 +712,7 @@ body {
     color: #c7d2fe;
 }
 .glass .header { background: transparent; color: #a78bfa; }
+.glass .header .header-prompt { color: #6366f1; }
 .glass .header::after { background: linear-gradient(90deg, transparent, #a78bfa30, transparent); }
 .glass .panel { border: 1px solid #6366f130; background: rgba(15, 10, 46, 0.7); backdrop-filter: blur(16px); box-shadow: 0 4px 24px rgba(99, 102, 241, 0.06); border-radius: 14px; }
 .glass .panel.focus-glow { box-shadow: 0 0 30px #6366f115, 0 4px 24px rgba(99, 102, 241, 0.1), inset 0 1px 0 #818cf815; }
@@ -829,7 +836,7 @@ body {
     <button id="btn-glass" onclick="setTheme('glass')">Glass</button>
 </div>
 
-<div class="header"><img src="/static/logo-icon.png" alt="" class="header-logo">Yakety Yak</div>
+<div class="header"><img src="/static/logo-icon.png" alt="" class="header-logo"><span class="header-prompt">&gt;_</span>Yakety Yak</div>
 
 <!-- VIEW TOGGLE -->
 <div class="view-toggle">
