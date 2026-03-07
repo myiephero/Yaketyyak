@@ -72,6 +72,13 @@ nav {
     font-size: 1.1rem;
 }
 
+.logo-img {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    object-fit: cover;
+}
+
 .nav-links {
     display: flex; gap: 32px;
 }

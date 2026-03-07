@@ -1,0 +1,21 @@
+Logo Design Brief: YaketyYak
+
+What it is: YaketyYak is a developer tool that sits alongside your terminal (command line) and translates everything happening on screen into plain, human-readable language in real time. Think of it as "Google Translate for the terminal" — you type commands on the left, and friendly explanations appear on the right. It also includes a Git Translator that analyzes GitHub repositories and gives you a risk/reward score before you clone them.
+
+Who it's for: New coders, "vibe coders," bootcamp students, and anyone who finds the command line intimidating. It meets users at their level with four skill modes ranging from complete beginner (with real-world analogies) to terse expert mode.
+
+Personality and tone: Friendly, approachable, slightly playful — but not childish. The name "Yakety Yak" evokes casual conversation and chatting, like having a knowledgeable friend sitting next to you explaining things. It's warm and supportive without being patronizing.
+
+Visual identity of the app: The app has two themes — a "Terminal" theme (dark background with green accents, classic hacker aesthetic) and a "Glass" theme (deep indigo/purple with glassmorphic, modern iOS-style feel). The UI uses the JetBrains Mono monospace font and features a split-pane layout. The existing logo placeholder in the app is >_ (a terminal prompt symbol).
+
+Logo requirements:
+
+Should work at small sizes (menu bar icon, favicon, desktop icon, GitHub social preview)
+Should feel at home in a developer's dock/taskbar alongside tools like VS Code, iTerm, and GitHub Desktop
+Should bridge the gap between "serious dev tool" and "approachable for beginners"
+Consider incorporating terminal/CLI visual cues (cursor, prompt, brackets, chevrons) combined with something that suggests conversation or translation (speech bubble, chat, dialogue)
+The name lends itself to a yak animal motif if done tastefully — a stylized/minimal yak could work as the icon, especially if combined with terminal elements
+Needs to look good on both dark and light backgrounds
+Flat or semi-flat style preferred — no heavy gradients or photorealism
+Color palette should complement both the green (#10b981) terminal theme and the purple (#6366f1, #a78bfa) glass theme, or be neutral enough to work with both
+Deliverables needed: App icon (square, rounded corners for macOS), favicon, and a horizontal lockup with icon + wordmark for the landing page and GitHub repo header.

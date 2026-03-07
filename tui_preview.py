@@ -261,6 +261,8 @@ HTML = r"""<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Yakety Yak — UI Preview</title>
+<link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -821,7 +823,7 @@ body {
     <button id="btn-glass" onclick="setTheme('glass')">Glass</button>
 </div>
 
-<div class="header">Yakety Yak</div>
+<div class="header"><img src="/static/favicon-32.png" alt="" style="width:18px;height:18px;border-radius:4px;vertical-align:middle;margin-right:6px;margin-top:-2px;">Yakety Yak</div>
 
 <!-- VIEW TOGGLE -->
 <div class="view-toggle">
