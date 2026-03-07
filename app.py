@@ -80,10 +80,10 @@ automatically. No copy-paste needed!
   3. An explanation appears on the right automatically
 
 [bold]Git Translator:[/]
-  Type [bold cyan]/git <url>[/] to analyze any GitHub repository
-  Example: [bold cyan]/git https://github.com/torvalds/linux[/]
+  Paste any GitHub URL to analyze it instantly
+  Example: [bold cyan]https://github.com/torvalds/linux[/]
   Also works: [bold cyan]/git owner/repo[/]
-  Shows: stars, forks, language, license, quality score, and more
+  Shows: stars, forks, language, license, risk/reward score, and more
 
 [bold]Translate without running:[/]
   Type [bold cyan]translate <command>[/] to explain a command without running it
@@ -260,7 +260,7 @@ class TerminalTranslator(App):
                     yield Label("SHELL", id="shell-title")
                     yield ShellOutput(id="shell-output", highlight=False, markup=False, wrap=True)
                     yield Input(
-                        placeholder="Type a command, /git <url>, or 'help'",
+                        placeholder="Type a command, paste a GitHub URL, or 'help'",
                         id="shell-input",
                     )
             with Container(id="translation-panel"):
@@ -331,7 +331,7 @@ class TerminalTranslator(App):
         trans.write("")
         trans.write("[bold]Get started:[/]")
         trans.write("  Type [bold cyan]try 1[/] to run your first command")
-        trans.write("  Type [bold cyan]/git owner/repo[/] to analyze a GitHub repo")
+        trans.write("  Paste a [bold cyan]GitHub URL[/] to analyze any repo")
         trans.write("  Type [bold cyan]help[/] for full instructions")
         trans.write("")
         trans.write("[bold]Try these yourself:[/]")
@@ -419,6 +419,10 @@ class TerminalTranslator(App):
         if git_match:
             url_or_repo = git_match.group(1).strip()
             self._analyze_github_repo(url_or_repo)
+            return True
+
+        if re.match(r"^https?://github\.com/[^/]+/[^/\s#?]+", cmd, re.IGNORECASE):
+            self._analyze_github_repo(cmd.strip())
             return True
 
         return False
