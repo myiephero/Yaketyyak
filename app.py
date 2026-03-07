@@ -228,11 +228,11 @@ class TerminalTranslator(App):
     SUB_TITLE = "Type commands in the shell \u2014 get plain-language explanations"
 
     BINDINGS = [
-        Binding("ctrl+b", "toggle_mode", "Beginner/Familiar"),
-        Binding("ctrl+t", "toggle_ai", "Toggle AI"),
-        Binding("ctrl+l", "clear_translations", "Clear Translations"),
-        Binding("ctrl+s", "toggle_theme", "Switch Theme"),
-        Binding("ctrl+q", "quit", "Quit"),
+        Binding("ctrl+b", "toggle_mode", "Toggle Mode", key_display="Ctrl+B"),
+        Binding("ctrl+t", "toggle_ai", "AI Toggle", key_display="Ctrl+T"),
+        Binding("ctrl+l", "clear_translations", "Clear Panel", key_display="Ctrl+L"),
+        Binding("ctrl+s", "toggle_theme", "Switch Theme", key_display="Ctrl+S"),
+        Binding("ctrl+q", "quit", "Quit App", key_display="Ctrl+Q"),
     ]
 
     mode = reactive("beginner")
@@ -337,7 +337,7 @@ class TerminalTranslator(App):
         trans.write(f"  [cyan]4.[/] [bold]{STARTER_COMMANDS[3][0]}[/] \u2014 {STARTER_COMMANDS[3][1]}")
         trans.write(f"  [cyan]5.[/] [bold]{STARTER_COMMANDS[4][0]}[/] \u2014 {STARTER_COMMANDS[4][1]}")
         trans.write("")
-        trans.write("[dim]Ctrl+B: Mode  |  Ctrl+T: AI  |  Ctrl+S: Theme  |  Ctrl+L: Clear  |  Ctrl+Q: Quit[/]")
+        trans.write("[dim]Ctrl+B: Toggle Mode  |  Ctrl+T: AI Toggle  |  Ctrl+S: Switch Theme  |  Ctrl+L: Clear Panel  |  Ctrl+Q: Quit App[/]")
         if not AI_AVAILABLE:
             trans.write("")
             trans.write("[yellow]AI is off \u2014 no AI backend detected.[/]")
@@ -739,8 +739,35 @@ class TerminalTranslator(App):
     def on_select_changed(self, event: Select.Changed) -> None:
         if event.select.id == "mode-select":
             self.mode = event.value
+            self._update_footer_for_mode(self.mode)
         elif event.select.id == "lang-select":
             self.language = event.value
+
+    def _update_footer_for_mode(self, mode_name: str) -> None:
+        if mode_name == "familiar":
+            new_bindings = [
+                Binding("ctrl+b", "toggle_mode", "Mode", key_display="^B"),
+                Binding("ctrl+t", "toggle_ai", "AI", key_display="^T"),
+                Binding("ctrl+l", "clear_translations", "Clear", key_display="^L"),
+                Binding("ctrl+s", "toggle_theme", "Theme", key_display="^S"),
+                Binding("ctrl+q", "quit", "Quit", key_display="^Q"),
+            ]
+        else:
+            new_bindings = [
+                Binding("ctrl+b", "toggle_mode", "Toggle Mode", key_display="Ctrl+B"),
+                Binding("ctrl+t", "toggle_ai", "AI Toggle", key_display="Ctrl+T"),
+                Binding("ctrl+l", "clear_translations", "Clear Panel", key_display="Ctrl+L"),
+                Binding("ctrl+s", "toggle_theme", "Switch Theme", key_display="Ctrl+S"),
+                Binding("ctrl+q", "quit", "Quit App", key_display="Ctrl+Q"),
+            ]
+        self._bindings.keys.clear()
+        for b in new_bindings:
+            self._bindings.bind(b.key, b.action, b.description, key_display=b.key_display)
+        try:
+            footer = self.query_one(Footer)
+            footer.refresh()
+        except Exception:
+            pass
 
     def action_toggle_mode(self) -> None:
         mode_select = self.query_one("#mode-select", Select)
@@ -750,6 +777,7 @@ class TerminalTranslator(App):
         else:
             self.mode = "beginner"
             mode_select.value = "beginner"
+        self._update_footer_for_mode(self.mode)
         status = self.query_one("#status-label", Label)
         status.update(f"Mode: {self.mode.title()}")
 

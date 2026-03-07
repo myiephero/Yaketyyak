@@ -585,12 +585,12 @@ body {
 </div>
 
 <!-- FOOTER -->
-<div class="footer">
-    <span><span class="kbd">^B</span> Mode</span>
-    <span><span class="kbd">^T</span> AI</span>
-    <span><span class="kbd">^S</span> Theme</span>
-    <span><span class="kbd">^L</span> Clear</span>
-    <span><span class="kbd">^Q</span> Quit</span>
+<div class="footer" id="footer-bar">
+    <span><span class="kbd">Ctrl+B</span> Toggle Mode</span>
+    <span><span class="kbd">Ctrl+T</span> AI Toggle</span>
+    <span><span class="kbd">Ctrl+S</span> Switch Theme</span>
+    <span><span class="kbd">Ctrl+L</span> Clear Panel</span>
+    <span><span class="kbd">Ctrl+Q</span> Quit App</span>
 </div>
 
 <script>
@@ -601,6 +601,25 @@ function setTheme(theme) {
     });
     document.getElementById('btn-' + theme).classList.add('active');
     document.getElementById('theme-label').textContent = theme === 'terminal' ? 'Terminal' : 'Glass';
+}
+
+function updateFooter(mode) {
+    var footer = document.getElementById('footer-bar');
+    if (mode === 'beginner') {
+        footer.innerHTML =
+            '<span><span class="kbd">Ctrl+B</span> Toggle Mode</span>' +
+            '<span><span class="kbd">Ctrl+T</span> AI Toggle</span>' +
+            '<span><span class="kbd">Ctrl+S</span> Switch Theme</span>' +
+            '<span><span class="kbd">Ctrl+L</span> Clear Panel</span>' +
+            '<span><span class="kbd">Ctrl+Q</span> Quit App</span>';
+    } else {
+        footer.innerHTML =
+            '<span><span class="kbd">^B</span> Mode</span>' +
+            '<span><span class="kbd">^T</span> AI</span>' +
+            '<span><span class="kbd">^S</span> Theme</span>' +
+            '<span><span class="kbd">^L</span> Clear</span>' +
+            '<span><span class="kbd">^Q</span> Quit</span>';
+    }
 }
 
 (function() {
@@ -622,6 +641,13 @@ function setTheme(theme) {
             panel.classList.add('focus-glow');
         });
     });
+
+    var modeSelect = document.querySelector('.settings-bar select');
+    if (modeSelect) {
+        modeSelect.addEventListener('change', function() {
+            updateFooter(this.value.toLowerCase());
+        });
+    }
 })();
 </script>
 </body>
