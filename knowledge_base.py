@@ -6,7 +6,7 @@ import re
 
 def _get_user_kb_path():
     if getattr(sys, 'frozen', False):
-        return os.path.join(os.path.expanduser("~"), ".terminal-translator", "knowledge_base.json")
+        return os.path.join(os.path.expanduser("~"), ".yakety-yak", "knowledge_base.json")
     return "terminal_knowledge_base.json"
 
 
