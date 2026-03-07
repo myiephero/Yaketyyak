@@ -60,24 +60,25 @@ nav {
 }
 
 .logo {
-    display: flex; align-items: center; gap: 10px;
-    text-decoration: none; color: var(--text);
-    font-weight: 700; font-size: 1rem;
+    display: flex; align-items: center;
+    text-decoration: none;
 }
 
-.logo-icon {
-    color: var(--accent);
-    font-family: var(--mono);
-    font-weight: 600;
-    font-size: 1.1rem;
-}
-
-.logo-img {
-    width: 32px;
-    height: 32px;
-    border-radius: 0;
+.logo-wordmark {
+    height: 38px;
+    width: auto;
     object-fit: contain;
-    filter: drop-shadow(0 1px 3px rgba(0,0,0,0.2));
+    filter: drop-shadow(0 1px 4px rgba(0,0,0,0.3));
+    transition: opacity var(--transition);
+}
+.logo:hover .logo-wordmark { opacity: 0.85; }
+
+.footer-wordmark {
+    height: 28px;
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 1px 3px rgba(0,0,0,0.25));
+    vertical-align: middle;
 }
 
 .nav-links {
