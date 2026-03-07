@@ -67,7 +67,7 @@ STARTER_COMMANDS = [
     ("uptime", "Show how long the system has been running"),
 ]
 
-HELP_TEXT = """[bold green]Terminal Translator \u2014 Help[/]
+HELP_TEXT = """[bold green]Yakety Yak \u2014 Help[/]
 
 [bold]What is this?[/]
 This tool sits alongside a real terminal shell. You type commands
@@ -226,7 +226,7 @@ class TerminalTranslator(App):
 
     CSS = APP_CSS
 
-    TITLE = "Terminal Translator"
+    TITLE = "Yakety Yak"
     SUB_TITLE = "Type commands in the shell \u2014 get plain-language explanations"
 
     BINDINGS = [
@@ -324,7 +324,7 @@ class TerminalTranslator(App):
 
     def _show_welcome(self) -> None:
         trans = self.query_one("#translation-output", RichLog)
-        trans.write("[bold green]Welcome to Terminal Translator![/]")
+        trans.write("[bold green]Welcome to Yakety Yak![/]")
         trans.write("")
         trans.write("This tool explains everything that happens in your")
         trans.write("terminal, in plain language. No experience needed!")
