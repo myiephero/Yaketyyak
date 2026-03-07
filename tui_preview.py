@@ -234,8 +234,10 @@ def analyze_repo(owner, repo):
 
 @app.route("/api/analyze", methods=["POST"])
 def api_analyze():
-    body = request.get_json(force=True)
-    url = body.get("url", "").strip()
+    body = request.get_json(silent=True)
+    if not body or not isinstance(body, dict):
+        return jsonify({"error": "Invalid request body"}), 400
+    url = str(body.get("url", "")).strip()
     if not url:
         return jsonify({"error": "No URL provided"}), 400
     owner, repo = parse_github_url(url)
@@ -478,8 +480,8 @@ body {
 /* ═══ GIT TRANSLATOR VIEW ═══ */
 #git-view { display: none; flex-direction: column; flex: 1; min-height: 0; padding: 6px; }
 #git-view.active { display: flex; }
-#terminal-view.active { display: flex; }
 #terminal-view { display: none; }
+#terminal-view.active { display: flex; }
 
 .git-input-area {
     display: flex; gap: 8px; padding: 8px;
@@ -797,7 +799,7 @@ body {
 </div>
 
 <!-- ═══════════════ TERMINAL VIEW ═══════════════ -->
-<div class="main" id="terminal-view" class="active">
+<div class="main active" id="terminal-view">
     <div class="panel shell-panel focus-glow">
         <div class="panel-title shell-title">SHELL</div>
         <div class="panel-content-wrap">
@@ -991,16 +993,27 @@ body {
         return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
 
+    function esc(s) {
+        var d = document.createElement('div');
+        d.textContent = s;
+        return d.innerHTML;
+    }
+
+    function safeHref(url) {
+        if (/^https?:\/\//i.test(url)) return esc(url);
+        return '#';
+    }
+
     function renderResults(d) {
         var html = '<div class="git-card animate-in">';
-        html += '<h2>' + d.name + '</h2>';
-        html += '<div class="desc">' + d.description + '</div>';
+        html += '<h2>' + esc(d.name) + '</h2>';
+        html += '<div class="desc">' + esc(d.description) + '</div>';
 
-        html += '<div class="verdict-bar" style="border-left: 4px solid ' + d.verdict_color + ';">';
-        html += '<div class="verdict-score" style="color:' + d.verdict_color + ';">' + d.score + '</div>';
+        html += '<div class="verdict-bar" style="border-left: 4px solid ' + esc(d.verdict_color) + ';">';
+        html += '<div class="verdict-score" style="color:' + esc(d.verdict_color) + ';">' + parseInt(d.score) + '</div>';
         html += '<div>';
-        html += '<div class="verdict-label" style="color:' + d.verdict_color + ';">' + d.verdict + '</div>';
-        html += '<div class="verdict-summary">' + d.verdict_summary + '</div>';
+        html += '<div class="verdict-label" style="color:' + esc(d.verdict_color) + ';">' + esc(d.verdict) + '</div>';
+        html += '<div class="verdict-summary">' + esc(d.verdict_summary) + '</div>';
         html += '</div></div>';
 
         html += '<div class="kpi-grid">';
@@ -1011,8 +1024,8 @@ body {
             {v: numberWithCommas(d.open_issues), l: "Open Issues"},
             {v: d.contributors > 0 ? numberWithCommas(d.contributors) : "?", l: "Contributors"},
             {v: d.releases > 0 ? numberWithCommas(d.releases) : "0", l: "Releases"},
-            {v: d.language, l: "Language"},
-            {v: d.license, l: "License"},
+            {v: esc(d.language), l: "Language"},
+            {v: esc(d.license), l: "License"},
         ];
         for (var i = 0; i < kpis.length; i++) {
             html += '<div class="kpi-item"><div class="kpi-val">' + kpis[i].v + '</div><div class="kpi-label">' + kpis[i].l + '</div></div>';
@@ -1022,7 +1035,7 @@ body {
         if (d.risk_flags.length > 0) {
             html += '<div class="flag-section"><h3 class="risk-title">&#9888; Risk Flags</h3>';
             for (var i = 0; i < d.risk_flags.length; i++) {
-                html += '<div class="flag-item flag-risk">' + d.risk_flags[i] + '</div>';
+                html += '<div class="flag-item flag-risk">' + esc(d.risk_flags[i]) + '</div>';
             }
             html += '</div>';
         }
@@ -1030,30 +1043,30 @@ body {
         if (d.reward_flags.length > 0) {
             html += '<div class="flag-section"><h3 class="reward-title">&#10003; Rewards</h3>';
             for (var i = 0; i < d.reward_flags.length; i++) {
-                html += '<div class="flag-item flag-reward">' + d.reward_flags[i] + '</div>';
+                html += '<div class="flag-item flag-reward">' + esc(d.reward_flags[i]) + '</div>';
             }
             html += '</div>';
         }
 
         html += '<div class="meta-grid">';
-        html += '<div class="meta-key">Created</div><div class="meta-val">' + d.created + '</div>';
-        html += '<div class="meta-key">Last Push</div><div class="meta-val">' + d.updated + '</div>';
-        html += '<div class="meta-key">Default Branch</div><div class="meta-val">' + d.default_branch + '</div>';
+        html += '<div class="meta-key">Created</div><div class="meta-val">' + esc(d.created) + '</div>';
+        html += '<div class="meta-key">Last Push</div><div class="meta-val">' + esc(d.updated) + '</div>';
+        html += '<div class="meta-key">Default Branch</div><div class="meta-val">' + esc(d.default_branch) + '</div>';
         html += '<div class="meta-key">Size</div><div class="meta-val">' + numberWithCommas(d.size_kb) + ' KB</div>';
         if (d.is_fork) { html += '<div class="meta-key">Type</div><div class="meta-val" style="color:#facc15;">Fork</div>'; }
         if (d.archived) { html += '<div class="meta-key">Status</div><div class="meta-val" style="color:#ef4444;">Archived</div>'; }
-        if (d.homepage) { html += '<div class="meta-key">Homepage</div><div class="meta-val"><a href="' + d.homepage + '" target="_blank" style="color:inherit;text-decoration:underline;">' + d.homepage + '</a></div>'; }
+        if (d.homepage) { html += '<div class="meta-key">Homepage</div><div class="meta-val"><a href="' + safeHref(d.homepage) + '" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">' + esc(d.homepage) + '</a></div>'; }
         html += '</div>';
 
         if (d.topics && d.topics.length > 0) {
             html += '<div class="topics-wrap">';
             for (var i = 0; i < d.topics.length; i++) {
-                html += '<span class="topic-tag">' + d.topics[i] + '</span>';
+                html += '<span class="topic-tag">' + esc(d.topics[i]) + '</span>';
             }
             html += '</div>';
         }
 
-        html += '<div style="margin-top:12px;font-size:10px;opacity:0.4;"><a href="' + d.url + '" target="_blank" style="color:inherit;">' + d.url + '</a></div>';
+        html += '<div style="margin-top:12px;font-size:10px;opacity:0.4;"><a href="' + safeHref(d.url) + '" target="_blank" rel="noopener" style="color:inherit;">' + esc(d.url) + '</a></div>';
         html += '</div>';
         return html;
     }
