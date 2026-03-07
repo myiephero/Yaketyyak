@@ -736,16 +736,42 @@ class YaketyYak(App):
         elif contrib_count == 1:
             risk_flags.append("Single contributor \u2014 bus factor of 1")
 
+        languages_info = {}
+        try:
+            lang_url = f"https://api.github.com/repos/{owner}/{repo}/languages"
+            req_lang = urllib.request.Request(lang_url, headers={
+                "Accept": "application/vnd.github.v3+json",
+                "User-Agent": "YaketyYak/1.0",
+            })
+            with urllib.request.urlopen(req_lang, timeout=5, context=SSL_CONTEXT) as resp_lang:
+                languages_info = json.loads(resp_lang.read())
+        except Exception:
+            pass
+
+        recent_commits = []
+        try:
+            commits_url = f"https://api.github.com/repos/{owner}/{repo}/commits?per_page=5"
+            req_commits = urllib.request.Request(commits_url, headers={
+                "Accept": "application/vnd.github.v3+json",
+                "User-Agent": "YaketyYak/1.0",
+            })
+            with urllib.request.urlopen(req_commits, timeout=5, context=SSL_CONTEXT) as resp_commits:
+                recent_commits = json.loads(resp_commits.read())
+        except Exception:
+            pass
+
         name = data.get("full_name", f"{owner}/{repo}")
-        desc = data.get("description") or "No description"
+        desc = data.get("description") or "No description provided"
         stars = data.get("stargazers_count", 0)
         forks = data.get("forks_count", 0)
         watchers = data.get("subscribers_count", data.get("watchers_count", 0))
         lang = data.get("language") or "Not specified"
         license_info = data.get("license")
         license_name = license_info.get("spdx_id", "Unknown") if license_info else "None"
+        license_full = license_info.get("name", license_name) if license_info else "None"
         created = data.get("created_at", "")[:10]
         updated = data.get("pushed_at", "")[:10]
+        created_full = data.get("created_at", "")
         size_kb = data.get("size", 0)
         default_branch = data.get("default_branch", "main")
         is_fork = data.get("fork", False)
@@ -753,69 +779,213 @@ class YaketyYak(App):
         open_issues = data.get("open_issues_count", 0)
         topics = data.get("topics", [])
         homepage = data.get("homepage") or ""
+        has_wiki = data.get("has_wiki", False)
+        has_pages = data.get("has_pages", False)
+        has_projects = data.get("has_projects", False)
+        has_discussions = data.get("has_discussions", False)
+        network_count = data.get("network_count", forks)
 
         if score >= 75:
             verdict_color = "green"
-            verdict = "Excellent"
-            verdict_summary = "Well-maintained, widely used, and safe to integrate."
+            verdict = "EXCELLENT"
+            verdict_emoji = "\u2705"
+            verdict_summary = "Well-maintained, widely used, and safe to integrate into your projects."
         elif score >= 55:
             verdict_color = "cyan"
-            verdict = "Good"
-            verdict_summary = "Solid project with good fundamentals."
+            verdict = "GOOD"
+            verdict_emoji = "\U0001f44d"
+            verdict_summary = "Solid project with good fundamentals. Worth using with normal caution."
         elif score >= 35:
             verdict_color = "yellow"
-            verdict = "Fair"
-            verdict_summary = "Some concerns. Review the risk flags."
+            verdict = "FAIR"
+            verdict_emoji = "\u26a0\ufe0f"
+            verdict_summary = "Some concerns present. Review the risk flags before depending on this."
         else:
             verdict_color = "red"
-            verdict = "Caution"
-            verdict_summary = "Significant risks. Evaluate carefully."
+            verdict = "CAUTION"
+            verdict_emoji = "\U0001f6a8"
+            verdict_summary = "Significant risks identified. Carefully evaluate before using."
+
+        if size_kb >= 1024 * 1024:
+            size_str = f"{size_kb / 1024 / 1024:.1f} GB"
+        elif size_kb >= 1024:
+            size_str = f"{size_kb / 1024:.1f} MB"
+        else:
+            size_str = f"{size_kb:,} KB"
+
+        repo_age_str = ""
+        if created_full:
+            try:
+                created_dt = datetime.fromisoformat(created_full.replace("Z", "+00:00"))
+                age_days = (datetime.now(timezone.utc) - created_dt).days
+                if age_days >= 365:
+                    repo_age_str = f" ({age_days // 365}y {(age_days % 365) // 30}m old)"
+                elif age_days >= 30:
+                    repo_age_str = f" ({age_days // 30} months old)"
+                else:
+                    repo_age_str = f" ({age_days} days old)"
+            except Exception:
+                pass
+
+        bar_width = 20
+        filled = int(score / 100 * bar_width)
+        empty = bar_width - filled
+        score_bar = f"[{verdict_color}]{'█' * filled}[/{verdict_color}][dim]{'░' * empty}[/dim]"
 
         def w(text):
             self.call_from_thread(out.write, text)
 
         w("")
-        w(f"[bold]{name}[/bold]")
-        w(f"[dim]{desc}[/dim]")
+        w(f"[bold]{'═' * 54}[/bold]")
+        w(f"  [bold]{name}[/bold]")
+        w(f"  [dim]{desc}[/dim]")
+        if homepage:
+            w(f"  [dim cyan]{homepage}[/dim cyan]")
+        w(f"[bold]{'═' * 54}[/bold]")
+
         w("")
-        w(f"  [{verdict_color}]\u2588\u2588 Quality Score: {score}/100 \u2014 {verdict}[/{verdict_color}]")
-        w(f"  [dim]{verdict_summary}[/dim]")
+        w(f"  {verdict_emoji} [{verdict_color}][bold]  QUALITY SCORE: {score}/100 — {verdict}[/bold][/{verdict_color}]")
+        w(f"     {score_bar} {score}%")
+        w(f"  [dim]  {verdict_summary}[/dim]")
+
         w("")
-        w(f"  [yellow]\u2605[/yellow] Stars: [bold]{stars:,}[/bold]     \U0001f374 Forks: [bold]{forks:,}[/bold]     \U0001f441 Watchers: [bold]{watchers:,}[/bold]")
-        w(f"  \U0001f4bb Language: [bold]{lang}[/bold]     \U0001f4dc License: [bold]{license_name}[/bold]")
-        w(f"  \U0001f4c5 Created: {created}     \U0001f504 Last push: {updated}")
-        w(f"  \U0001f333 Default branch: {default_branch}     \U0001f4e6 Size: {size_kb:,} KB")
-        w(f"  \U0001f41b Open issues: {open_issues:,}     \U0001f465 Contributors: {contrib_count}")
-        w(f"  \U0001f4e6 Releases: {releases_count}")
+        w(f"  [bold]{'─' * 50}[/bold]")
+        w(f"  [bold cyan]POPULARITY[/bold cyan]")
+        w(f"  [bold]{'─' * 50}[/bold]")
+        w(f"    [yellow]★[/yellow] Stars        [bold]{stars:>10,}[/bold]")
+        w(f"    \U0001f374 Forks        [bold]{forks:>10,}[/bold]")
+        w(f"    \U0001f441  Watchers     [bold]{watchers:>10,}[/bold]")
+        w(f"    \U0001f465 Contributors [bold]{contrib_count:>10,}[/bold]")
+        w(f"    \U0001f310 Network      [bold]{network_count:>10,}[/bold]")
+
+        w("")
+        w(f"  [bold]{'─' * 50}[/bold]")
+        w(f"  [bold cyan]PROJECT INFO[/bold cyan]")
+        w(f"  [bold]{'─' * 50}[/bold]")
+        w(f"    \U0001f4bb Language     [bold]{lang}[/bold]")
+        w(f"    \U0001f4dc License      [bold]{license_full}[/bold]")
+        w(f"    \U0001f333 Branch       [bold]{default_branch}[/bold]")
+        w(f"    \U0001f4e6 Size         [bold]{size_str}[/bold]")
+        w(f"    \U0001f4e6 Releases     [bold]{releases_count}[/bold]")
+        w(f"    \U0001f41b Open Issues  [bold]{open_issues:,}[/bold]")
 
         flags = []
         if is_fork:
-            flags.append("[yellow]Fork[/yellow]")
+            flags.append("[yellow]⑂ Fork[/yellow]")
         if archived:
-            flags.append("[red]Archived[/red]")
+            flags.append("[red]⊘ Archived[/red]")
+        if has_wiki:
+            flags.append("[dim]📖 Wiki[/dim]")
+        if has_pages:
+            flags.append("[dim]🌐 Pages[/dim]")
+        if has_discussions:
+            flags.append("[dim]💬 Discussions[/dim]")
+        if has_projects:
+            flags.append("[dim]📋 Projects[/dim]")
         if flags:
-            w(f"  Flags: {' | '.join(flags)}")
-
-        if topics:
-            w(f"  Topics: [dim]{', '.join(topics[:8])}[/dim]")
-        if homepage:
-            w(f"  Homepage: [dim]{homepage}[/dim]")
-
-        if reward_flags:
-            w("")
-            w("  [green][bold]\u2713 Strengths:[/bold][/green]")
-            for flag in reward_flags:
-                w(f"    [green]\u2713[/green] {flag}")
-
-        if risk_flags:
-            w("")
-            w("  [yellow][bold]\u26a0 Risks:[/bold][/yellow]")
-            for flag in risk_flags:
-                w(f"    [yellow]\u26a0[/yellow] {flag}")
+            w(f"    Features     {' · '.join(flags)}")
 
         w("")
-        w(f"  [dim]{api_url.replace('api.github.com/repos', 'github.com')}[/dim]")
-        w("[dim]" + "\u2500" * 50 + "[/dim]")
+        w(f"  [bold]{'─' * 50}[/bold]")
+        w(f"  [bold cyan]TIMELINE[/bold cyan]")
+        w(f"  [bold]{'─' * 50}[/bold]")
+        w(f"    \U0001f4c5 Created      [bold]{created}[/bold]{repo_age_str}")
+        w(f"    \U0001f504 Last Push    [bold]{updated}[/bold]", )
+        if days_since_update is not None:
+            if days_since_update == 0:
+                w(f"                 [green]Updated today![/green]")
+            elif days_since_update == 1:
+                w(f"                 [green]Updated yesterday[/green]")
+            elif days_since_update < 7:
+                w(f"                 [green]Updated {days_since_update} days ago[/green]")
+            elif days_since_update < 30:
+                w(f"                 [cyan]Updated {days_since_update} days ago[/cyan]")
+            elif days_since_update < 90:
+                w(f"                 [yellow]Updated {days_since_update} days ago[/yellow]")
+            elif days_since_update < 365:
+                w(f"                 [yellow]Updated {days_since_update} days ago ({days_since_update // 30} months)[/yellow]")
+            else:
+                w(f"                 [red]Last updated {days_since_update} days ago ({days_since_update // 365}+ years)[/red]")
+
+        if languages_info:
+            w("")
+            w(f"  [bold]{'─' * 50}[/bold]")
+            w(f"  [bold cyan]LANGUAGES[/bold cyan]")
+            w(f"  [bold]{'─' * 50}[/bold]")
+            total_bytes = sum(languages_info.values())
+            lang_colors = {
+                "Python": "yellow", "JavaScript": "yellow", "TypeScript": "blue",
+                "Go": "cyan", "Rust": "red", "Ruby": "red", "Java": "red",
+                "C": "white", "C++": "magenta", "C#": "green", "Swift": "red",
+                "Kotlin": "magenta", "Shell": "green", "HTML": "red",
+                "CSS": "blue", "Dockerfile": "cyan", "Makefile": "green",
+            }
+            for lang_name, lang_bytes in sorted(languages_info.items(), key=lambda x: x[1], reverse=True)[:8]:
+                pct = (lang_bytes / total_bytes * 100) if total_bytes > 0 else 0
+                lang_bar_width = 15
+                lang_filled = int(pct / 100 * lang_bar_width)
+                lc = lang_colors.get(lang_name, "white")
+                bar = f"[{lc}]{'█' * lang_filled}[/{lc}][dim]{'░' * (lang_bar_width - lang_filled)}[/dim]"
+                w(f"    {bar} {pct:5.1f}%  {lang_name}")
+
+        if topics:
+            w("")
+            w(f"  [bold]{'─' * 50}[/bold]")
+            w(f"  [bold cyan]TOPICS[/bold cyan]")
+            w(f"  [bold]{'─' * 50}[/bold]")
+            topic_strs = [f"[dim cyan]#{t}[/dim cyan]" for t in topics[:12]]
+            row = "    "
+            for t in topic_strs:
+                row += t + "  "
+            w(row)
+
+        if recent_commits:
+            w("")
+            w(f"  [bold]{'─' * 50}[/bold]")
+            w(f"  [bold cyan]RECENT ACTIVITY[/bold cyan]")
+            w(f"  [bold]{'─' * 50}[/bold]")
+            for commit in recent_commits[:5]:
+                commit_data = commit.get("commit", {})
+                msg = commit_data.get("message", "").split("\n")[0][:60]
+                author = commit_data.get("author", {}).get("name", "unknown")
+                date_str = commit_data.get("author", {}).get("date", "")[:10]
+                sha_short = commit.get("sha", "")[:7]
+                w(f"    [dim]{sha_short}[/dim] {msg}")
+                w(f"             [dim]by {author} on {date_str}[/dim]")
+
+        w("")
+        w(f"  [bold]{'─' * 50}[/bold]")
+        if reward_flags:
+            w(f"  [green][bold]✓ STRENGTHS ({len(reward_flags)})[/bold][/green]")
+            w(f"  [bold]{'─' * 50}[/bold]")
+            for flag in reward_flags:
+                w(f"    [green]✓[/green] {flag}")
+            w("")
+
+        if risk_flags:
+            w(f"  [bold]{'─' * 50}[/bold]")
+            w(f"  [yellow][bold]⚠ RISKS ({len(risk_flags)})[/bold][/yellow]")
+            w(f"  [bold]{'─' * 50}[/bold]")
+            for flag in risk_flags:
+                w(f"    [yellow]⚠[/yellow] {flag}")
+            w("")
+
+        w(f"  [bold]{'─' * 50}[/bold]")
+        w(f"  [bold cyan]QUICK LINKS[/bold cyan]")
+        w(f"  [bold]{'─' * 50}[/bold]")
+        w(f"    [dim]Repo:[/dim]     https://github.com/{owner}/{repo}")
+        w(f"    [dim]Issues:[/dim]   https://github.com/{owner}/{repo}/issues")
+        w(f"    [dim]PRs:[/dim]      https://github.com/{owner}/{repo}/pulls")
+        if releases_count > 0:
+            w(f"    [dim]Releases:[/dim] https://github.com/{owner}/{repo}/releases")
+        if has_wiki:
+            w(f"    [dim]Wiki:[/dim]     https://github.com/{owner}/{repo}/wiki")
+
+        w("")
+        w(f"    [dim]Clone: git clone https://github.com/{owner}/{repo}.git[/dim]")
+
+        w("")
+        w(f"[bold]{'═' * 54}[/bold]")
         self.call_from_thread(status.update, "Ready")
 
     def _on_shell_output(self, text: str) -> None:
