@@ -303,9 +303,9 @@ body {
 }
 
 .header {
-    display: flex; align-items: center; justify-content: center; gap: 4px;
+    display: flex; align-items: center; justify-content: center; gap: 2px;
     padding: 14px 0 12px; font-weight: 700;
-    font-size: 17px; letter-spacing: 2px; text-transform: uppercase;
+    font-size: 17px; letter-spacing: 0.5px; text-transform: uppercase;
     transition: all var(--transition);
     position: relative;
 }
@@ -316,7 +316,7 @@ body {
 }
 .header .header-prompt {
     font-size: 20px; font-weight: 700;
-    margin: 0 -1px 0 1px;
+    margin: 0 -2px 0 0;
     transition: color var(--transition);
 }
 .header::after {
