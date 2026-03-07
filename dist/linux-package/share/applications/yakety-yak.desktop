@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Yakety Yak
+Comment=Learn the terminal with real-time command explanations
+Exec=yakety-yak
+Terminal=true
+Type=Application
+Categories=Development;Education;
+Keywords=terminal;cli;learn;translate;command;
+StartupNotify=false
