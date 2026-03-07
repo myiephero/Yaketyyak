@@ -303,13 +303,18 @@ body {
 }
 
 .header {
-    text-align: center; padding: 6px 0; font-weight: 600;
-    font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    padding: 12px 0 10px; font-weight: 700;
+    font-size: 17px; letter-spacing: 2px; text-transform: uppercase;
     transition: all var(--transition);
     position: relative;
 }
+.header .header-logo {
+    width: 32px; height: 32px; border-radius: 7px;
+    object-fit: cover; flex-shrink: 0;
+}
 .header::after {
-    content: ''; position: absolute; bottom: 0; left: 10%; right: 10%;
+    content: ''; position: absolute; bottom: 0; left: 5%; right: 5%;
     height: 1px; transition: background var(--transition);
 }
 
@@ -823,7 +828,7 @@ body {
     <button id="btn-glass" onclick="setTheme('glass')">Glass</button>
 </div>
 
-<div class="header"><img src="/static/favicon-32.png" alt="" style="width:18px;height:18px;border-radius:4px;vertical-align:middle;margin-right:6px;margin-top:-2px;">Yakety Yak</div>
+<div class="header"><img src="/static/favicon-64.png" alt="" class="header-logo">Yakety Yak</div>
 
 <!-- VIEW TOGGLE -->
 <div class="view-toggle">
