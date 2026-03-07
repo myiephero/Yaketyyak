@@ -1,7 +1,7 @@
 import json
 import os
 
-PREFS_DIR = os.path.join(os.path.expanduser("~"), ".terminal-translator")
+PREFS_DIR = os.path.join(os.path.expanduser("~"), ".yakety-yak")
 PREFS_FILE = os.path.join(PREFS_DIR, "preferences.json")
 
 THEME_NAMES = {
