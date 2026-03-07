@@ -774,7 +774,15 @@ class YaketyYak(App):
                 Binding("ctrl+s", "toggle_theme", "Switch Theme", key_display="Ctrl+S"),
                 Binding("ctrl+q", "quit", "Quit App", key_display="Ctrl+Q"),
             ]
-        self._bindings.keys.clear()
+        try:
+            if hasattr(self._bindings, 'keys') and hasattr(self._bindings.keys, 'clear'):
+                self._bindings.keys.clear()
+            elif hasattr(self._bindings, 'key_to_bindings'):
+                self._bindings.key_to_bindings.clear()
+            else:
+                self._bindings = type(self._bindings)()
+        except Exception:
+            pass
         for b in new_bindings:
             self._bindings.bind(b.key, b.action, b.description, key_display=b.key_display)
         try:
