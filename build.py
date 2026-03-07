@@ -49,7 +49,9 @@ def build_executable():
     cmd = [
         sys.executable, "-m", "PyInstaller",
         "--onefile", "--name", EXECUTABLE_NAME,
-        "--console", "--clean", "--noconfirm", "app.py",
+        "--console", "--clean", "--noconfirm",
+        "--paths", ".",
+        "app.py",
     ]
 
     for imp in HIDDEN_IMPORTS:
