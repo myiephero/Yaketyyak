@@ -67,9 +67,15 @@ python build.py --full   # Full edition with Ollama setup scripts
 - `try` — List 25 beginner-friendly starter commands
 - `try N` — Auto-run starter command N (1-25)
 
+## Modes
+- **Noob**: Never seen a terminal. Full hand-holding, real-world analogies, celebrates wins
+- **Beginner**: Just starting out. Simple, clear, supportive explanations
+- **Intermediate**: Comfortable with basics. Focused, practical, uses technical terms
+- **Advanced**: Experienced dev. Terse, expert-level, edge cases and pro tips only
+
 ## Keyboard Shortcuts
 
-- **Ctrl+B**: Toggle Beginner/Familiar mode
+- **Ctrl+B**: Cycle through modes (Noob → Beginner → Intermediate → Advanced)
 - **Ctrl+T**: Toggle AI on/off
 - **Ctrl+S**: Switch theme (Terminal / Glass)
 - **Ctrl+L**: Clear translation panel

@@ -105,8 +105,10 @@ automatically. No copy-paste needed!
   anything and are great for learning!
 
 [bold]Modes:[/]
-  [green]Beginner[/]   Very detailed, assumes no prior knowledge
-  [yellow]Familiar[/]   Concise, assumes you know the basics
+  [magenta]Noob[/]           Never seen a terminal before. Full hand-holding
+  [green]Beginner[/]       Just starting out. Simple, clear explanations
+  [yellow]Intermediate[/]   Comfortable with basics. Focused, practical
+  [red]Advanced[/]       Experienced dev. Terse, expert-level only
 
 [bold]How translations work:[/]
   1. Your command/output is checked against a built-in knowledge
@@ -235,7 +237,7 @@ class TerminalTranslator(App):
         Binding("ctrl+q", "quit", "Quit App", key_display="Ctrl+Q"),
     ]
 
-    mode = reactive("beginner")
+    mode = reactive("noob")
     use_ai = reactive(True)
     language = reactive("en")
 
@@ -272,10 +274,12 @@ class TerminalTranslator(App):
             yield Label("Mode:")
             yield Select(
                 [
+                    ("Noob", "noob"),
                     ("Beginner", "beginner"),
-                    ("Familiar", "familiar"),
+                    ("Intermediate", "intermediate"),
+                    ("Advanced", "advanced"),
                 ],
-                value="beginner",
+                value="noob",
                 id="mode-select",
                 allow_blank=False,
             )
@@ -743,8 +747,10 @@ class TerminalTranslator(App):
         elif event.select.id == "lang-select":
             self.language = event.value
 
+    MODE_ORDER = ["noob", "beginner", "intermediate", "advanced"]
+
     def _update_footer_for_mode(self, mode_name: str) -> None:
-        if mode_name == "familiar":
+        if mode_name in ("intermediate", "advanced"):
             new_bindings = [
                 Binding("ctrl+b", "toggle_mode", "Mode", key_display="^B"),
                 Binding("ctrl+t", "toggle_ai", "AI", key_display="^T"),
@@ -771,12 +777,10 @@ class TerminalTranslator(App):
 
     def action_toggle_mode(self) -> None:
         mode_select = self.query_one("#mode-select", Select)
-        if self.mode == "beginner":
-            self.mode = "familiar"
-            mode_select.value = "familiar"
-        else:
-            self.mode = "beginner"
-            mode_select.value = "beginner"
+        idx = self.MODE_ORDER.index(self.mode) if self.mode in self.MODE_ORDER else 0
+        next_idx = (idx + 1) % len(self.MODE_ORDER)
+        self.mode = self.MODE_ORDER[next_idx]
+        mode_select.value = self.mode
         self._update_footer_for_mode(self.mode)
         status = self.query_one("#status-label", Label)
         status.update(f"Mode: {self.mode.title()}")

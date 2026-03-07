@@ -111,7 +111,7 @@ Screen {
 }
 
 #mode-select {
-    width: 24;
+    width: 28;
 }
 
 #lang-select {

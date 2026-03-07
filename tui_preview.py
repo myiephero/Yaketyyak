@@ -575,7 +575,7 @@ body {
 <!-- SETTINGS BAR -->
 <div class="settings-bar">
     <span class="s-label">Mode</span>
-    <select><option>Beginner</option><option>Familiar</option></select>
+    <select><option value="noob">Noob</option><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option></select>
     <span class="s-label">Lang</span>
     <select><option>English</option><option>Spanish</option><option>French</option><option>German</option><option>Japanese</option><option>Chinese</option><option>Korean</option><option>Portuguese</option></select>
     <div class="ai-badge"><span class="ai-dot"></span> Ollama</div>
