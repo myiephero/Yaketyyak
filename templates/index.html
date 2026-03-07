@@ -443,9 +443,9 @@
         function getDownloadURL(edition) {
             var os = getOS();
             if (os === 'macOS') {
-                return RELEASE_BASE + 'TerminalTranslator-' + (edition === 'full' ? 'Full' : 'Lite') + '-macOS.zip';
+                return RELEASE_BASE + 'YaketyYak-' + (edition === 'full' ? 'Full' : 'Lite') + '-macOS.zip';
             } else if (os === 'Linux') {
-                return RELEASE_BASE + 'TerminalTranslator-' + (edition === 'full' ? 'Full' : 'Lite') + '-Linux.tar.gz';
+                return RELEASE_BASE + 'YaketyYak-' + (edition === 'full' ? 'Full' : 'Lite') + '-Linux.tar.gz';
             }
             return RELEASES_PAGE;
         }
