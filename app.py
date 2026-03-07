@@ -222,7 +222,7 @@ class ShellOutput(RichLog):
     pass
 
 
-class TerminalTranslator(App):
+class YaketyYak(App):
 
     CSS = APP_CSS
 
@@ -538,7 +538,7 @@ class TerminalTranslator(App):
             api_url = f"https://api.github.com/repos/{owner}/{repo}"
             req = urllib.request.Request(api_url, headers={
                 "Accept": "application/vnd.github.v3+json",
-                "User-Agent": "TerminalTranslator/1.0",
+                "User-Agent": "YaketyYak/1.0",
             })
             with urllib.request.urlopen(req, timeout=10) as resp:
                 data = json.loads(resp.read())
@@ -829,5 +829,5 @@ class TerminalTranslator(App):
 
 
 if __name__ == "__main__":
-    app = TerminalTranslator()
+    app = YaketyYak()
     app.run()
