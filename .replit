@@ -30,7 +30,7 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python serve_tui.py"
+args = "python tui_preview.py"
 waitForPort = 5000
 
 [[ports]]
