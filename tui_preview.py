@@ -466,6 +466,18 @@ body {
 }
 .cmd-header-icon { font-size: 18px; }
 .cmd-header-text { font-weight: 700; font-size: 14px; letter-spacing: 0.3px; }
+.cmd-header .line-ref {
+    margin-left: auto;
+}
+
+.line-ref {
+    display: inline-flex; align-items: center;
+    padding: 1px 7px; border-radius: 4px;
+    font-size: 9.5px; font-weight: 600;
+    letter-spacing: 0.3px; white-space: nowrap;
+    vertical-align: middle; margin-right: 5px;
+    transition: all var(--transition);
+}
 
 .shell-line {
     display: flex; gap: 0; line-height: 1.7;
@@ -637,6 +649,7 @@ body {
 .terminal .cmd-header-text { color: #10b981; }
 .terminal .source-badge { background: #10b98115; color: #10b981; }
 .terminal .source-badge .dot { background: #10b981; }
+.terminal .line-ref { background: #38bdf815; color: #38bdf8; border: 1px solid #38bdf820; }
 .terminal .panel-content::-webkit-scrollbar { width: 5px; }
 .terminal .panel-content::-webkit-scrollbar-track { background: transparent; }
 .terminal .panel-content::-webkit-scrollbar-thumb { background: #10b98140; border-radius: 3px; }
@@ -717,6 +730,7 @@ body {
 .glass .cmd-header-text { color: #a78bfa; }
 .glass .source-badge { background: #a78bfa15; color: #a78bfa; }
 .glass .source-badge .dot { background: #a78bfa; }
+.glass .line-ref { background: #67e8f912; color: #67e8f9; border: 1px solid #67e8f920; }
 .glass .panel-content::-webkit-scrollbar { width: 5px; }
 .glass .panel-content::-webkit-scrollbar-track { background: transparent; }
 .glass .panel-content::-webkit-scrollbar-thumb { background: #6366f140; border-radius: 3px; }
@@ -862,6 +876,7 @@ body {
                 <div class="cmd-header animate-in">
                     <span class="cmd-header-icon">&#128194;</span>
                     <span class="cmd-header-text">ls -la</span>
+                    <span class="line-ref">Line 1</span>
                 </div>
                 <div class="source-badge animate-in"><span class="dot"></span> Knowledge Base</div>
                 <div class="spacer"></div>
@@ -875,15 +890,86 @@ body {
 
                 <div class="trans-section animate-in">
                     <div class="trans-section-title"><span class="icon">&#128065;</span> What you see</div>
-                    <div class="line">Each row is a file or folder. The letters at the start</div>
-                    <div class="line">(like drwxr-xr-x) show who can read, write, or run it.</div>
-                    <div class="line">The number is the file size in bytes.</div>
+                    <div class="line"><span class="line-ref">Line 2</span> The total count of disk blocks used.</div>
+                    <div class="line"><span class="line-ref">Lines 3–4</span> The <span class="cyan">.</span> and <span class="cyan">..</span> entries — current folder and parent folder. Every directory has these.</div>
+                    <div class="line"><span class="line-ref">Lines 5–6</span> Regular files (<span class="cyan">app.py</span>, <span class="cyan">build.py</span>). The <span class="dimmed">-rw-r--r--</span> means you can read and write them.</div>
+                    <div class="line"><span class="line-ref">Line 7</span> A folder (<span class="cyan">src/</span>). The <span class="dimmed">d</span> at the start means directory.</div>
+                    <div class="line"><span class="line-ref">Line 8</span> Another file (<span class="cyan">README.md</span>). The size column shows 1024 bytes.</div>
                 </div>
 
                 <div class="trans-section animate-in">
                     <div class="trans-section-title"><span class="icon">&#128161;</span> Try next</div>
                     <div class="line"><span class="cyan">ls -lh</span> <span class="dimmed">—</span> Same thing but with human-readable sizes (KB, MB)</div>
                     <div class="line"><span class="cyan">ls src/</span> <span class="dimmed">—</span> List files inside the src folder</div>
+                </div>
+
+                <div style="height:1px;margin:10px 0;opacity:0.1;background:currentColor;"></div>
+
+                <div class="cmd-header animate-in">
+                    <span class="cmd-header-icon">&#128736;</span>
+                    <span class="cmd-header-text">git status</span>
+                    <span class="line-ref">Line 9</span>
+                </div>
+                <div class="source-badge animate-in"><span class="dot"></span> Knowledge Base</div>
+                <div class="spacer"></div>
+
+                <div class="trans-section animate-in">
+                    <div class="trans-section-title"><span class="icon">&#128218;</span> What it does</div>
+                    <div class="line">Checks the current state of your Git project — which</div>
+                    <div class="line">files you've changed, what's ready to commit, and what branch you're on.</div>
+                </div>
+
+                <div class="trans-section animate-in">
+                    <div class="trans-section-title"><span class="icon">&#128065;</span> What you see</div>
+                    <div class="line"><span class="line-ref">Line 10</span> You're on the <span class="cyan">main</span> branch — the primary version of your code.</div>
+                    <div class="line"><span class="line-ref">Line 11</span> "Changes not staged" means you edited files but haven't told Git to track those edits yet.</div>
+                    <div class="line"><span class="line-ref">Lines 12–13</span> The modified files: <span class="cyan">app.py</span> and <span class="cyan">themes.py</span>. Run <span class="cyan">git add .</span> to stage them.</div>
+                </div>
+
+                <div class="trans-section animate-in">
+                    <div class="trans-section-title"><span class="icon">&#128161;</span> Try next</div>
+                    <div class="line"><span class="cyan">git diff</span> <span class="dimmed">—</span> See exactly what changed in those files</div>
+                    <div class="line"><span class="cyan">git add . && git commit -m "update"</span> <span class="dimmed">—</span> Save your changes</div>
+                </div>
+
+                <div style="height:1px;margin:10px 0;opacity:0.1;background:currentColor;"></div>
+
+                <div class="cmd-header animate-in">
+                    <span class="cmd-header-icon">&#128100;</span>
+                    <span class="cmd-header-text">whoami</span>
+                    <span class="line-ref">Line 14</span>
+                </div>
+                <div class="source-badge animate-in"><span class="dot"></span> Knowledge Base</div>
+                <div class="spacer"></div>
+
+                <div class="trans-section animate-in">
+                    <div class="trans-section-title"><span class="icon">&#128218;</span> What it does</div>
+                    <div class="line">Prints the username of the account currently logged in.</div>
+                </div>
+
+                <div class="trans-section animate-in">
+                    <div class="trans-section-title"><span class="icon">&#128065;</span> What you see</div>
+                    <div class="line"><span class="line-ref">Line 15</span> Your username is <span class="cyan">user</span>. This is the account running commands on this system.</div>
+                </div>
+
+                <div style="height:1px;margin:10px 0;opacity:0.1;background:currentColor;"></div>
+
+                <div class="cmd-header animate-in">
+                    <span class="cmd-header-icon">&#128204;</span>
+                    <span class="cmd-header-text">pwd</span>
+                    <span class="line-ref">Line 16</span>
+                </div>
+                <div class="source-badge animate-in"><span class="dot"></span> Knowledge Base</div>
+                <div class="spacer"></div>
+
+                <div class="trans-section animate-in">
+                    <div class="trans-section-title"><span class="icon">&#128218;</span> What it does</div>
+                    <div class="line">Prints the full path of the folder you're currently in.</div>
+                </div>
+
+                <div class="trans-section animate-in">
+                    <div class="trans-section-title"><span class="icon">&#128065;</span> What you see</div>
+                    <div class="line"><span class="line-ref">Line 17</span> You're in <span class="cyan">/Users/user/projects/terminal-translator</span>. Think of it like the address of the folder you have open.</div>
                 </div>
             </div>
             <div class="scroll-fade" id="trans-scroll-fade"></div>
