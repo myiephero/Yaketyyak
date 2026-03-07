@@ -429,12 +429,43 @@
 
     <script>
     (function() {
+        var REPO = 'myiephero/yakkityyak';
+        var RELEASE_BASE = 'https://github.com/' + REPO + '/releases/latest/download/';
+        var RELEASES_PAGE = 'https://github.com/' + REPO + '/releases/latest';
+
+        function getOS() {
+            var ua = navigator.userAgent || navigator.platform || '';
+            if (/Mac/i.test(ua)) return 'macOS';
+            if (/Linux/i.test(ua)) return 'Linux';
+            return 'other';
+        }
+
+        function getDownloadURL(edition) {
+            var os = getOS();
+            if (os === 'macOS') {
+                return RELEASE_BASE + 'TerminalTranslator-' + (edition === 'full' ? 'Full' : 'Lite') + '-macOS.zip';
+            } else if (os === 'Linux') {
+                return RELEASE_BASE + 'TerminalTranslator-' + (edition === 'full' ? 'Full' : 'Lite') + '-Linux.tar.gz';
+            }
+            return RELEASES_PAGE;
+        }
+
+        var os = getOS();
+        document.querySelectorAll('.download-btn').forEach(function(btn) {
+            var edition = btn.getAttribute('data-edition');
+            var sub = btn.querySelector('.btn-sub');
+            if (os === 'macOS' && sub) {
+                sub.textContent = edition === 'full' ? '.zip — ~24 MB app + ~1 GB model' : '.zip — ~24 MB';
+            } else if (os === 'Linux' && sub) {
+                sub.textContent = edition === 'full' ? '.tar.gz — ~24 MB app + ~1 GB model' : '.tar.gz — ~24 MB';
+            }
+        });
+
         document.querySelectorAll('.download-btn').forEach(function(btn) {
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
                 var edition = this.getAttribute('data-edition');
-                document.getElementById('notify-edition').textContent = edition === 'full' ? 'Full + AI' : 'Lite';
-                document.getElementById('notify-modal').classList.add('active');
+                window.location.href = getDownloadURL(edition);
             });
         });
 
