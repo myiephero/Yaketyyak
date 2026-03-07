@@ -490,6 +490,9 @@ body {
     display: none; flex-direction: column; flex: 1; min-height: 0; padding: 6px;
     animation: fadeSlideUp 0.3s var(--ease) both;
 }
+.git-panel {
+    flex: 1; min-height: 0;
+}
 #git-view.active { display: flex; }
 #terminal-view {
     display: none;
@@ -660,7 +663,6 @@ body {
 
 .terminal .view-toggle button { background: #0b1019; color: #475569; border: 1px solid #1e293b; }
 .terminal .view-toggle button.active { background: #10b981; color: #0a0e17; border-color: #10b981; }
-.terminal .view-toggle button::after { background: #10b981; }
 
 .terminal .git-input-area input { background: #0d1420; color: #e2e8f0; border: 1px solid #1e293b; }
 .terminal .git-input-area input::placeholder { color: #475569; }
@@ -742,7 +744,6 @@ body {
 
 .glass .view-toggle button { background: rgba(26, 21, 69, 0.6); color: #6366f1; border: 1px solid #6366f130; backdrop-filter: blur(8px); }
 .glass .view-toggle button.active { background: linear-gradient(135deg, #6366f1, #818cf8); color: #e0e7ff; border-color: #818cf8; }
-.glass .view-toggle button::after { background: #a78bfa; }
 
 .glass .git-input-area input { background: rgba(26, 21, 69, 0.6); color: #e0e7ff; border: 1px solid #6366f130; backdrop-filter: blur(8px); }
 .glass .git-input-area input::placeholder { color: #4c1d95; }
@@ -995,7 +996,7 @@ body {
 
 <!-- ═══════════════ GIT TRANSLATOR VIEW ═══════════════ -->
 <div id="git-view">
-    <div class="panel git-panel" style="flex:1;min-height:0;">
+    <div class="panel git-panel">
         <div class="panel-title trans-title">GIT TRANSLATOR</div>
         <div class="git-input-area">
             <input type="text" id="git-url-input" placeholder="https://github.com/owner/repo" spellcheck="false">
