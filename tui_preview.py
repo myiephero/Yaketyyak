@@ -22,7 +22,7 @@ def analyze_repo(owner, repo):
     api_url = f"https://api.github.com/repos/{owner}/{repo}"
     headers = {
         "Accept": "application/vnd.github.v3+json",
-        "User-Agent": "TerminalTranslator/1.0",
+        "User-Agent": "YaketyYak/1.0",
     }
     req = urllib.request.Request(api_url, headers=headers)
     with urllib.request.urlopen(req, timeout=10) as resp:
