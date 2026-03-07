@@ -9,4 +9,5 @@ dependencies = [
     "pexpect>=4.9.0",
     "pyinstaller>=6.19.0",
     "textual>=8.0.2",
+    "textual-serve>=1.1.3",
 ]
