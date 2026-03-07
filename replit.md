@@ -66,6 +66,15 @@ python build.py --full   # Full edition with Ollama setup scripts
 - `translate <command>` — Explain a command without running it
 - `try` — List 25 beginner-friendly starter commands
 - `try N` — Auto-run starter command N (1-25)
+- Paste any `https://github.com/owner/repo` URL — auto-detected, launches Git Translator
+- `/git owner/repo` — shorthand for Git Translator
+
+## Git Translator
+- Toggle between Terminal and Git Translator views in the preview
+- Paste any GitHub URL to get a full KPI analysis: stars, forks, watchers, open issues, contributors, releases
+- Risk/Reward assessment with score out of 100 and verdict (Excellent/Good/Fair/Caution)
+- Risk flags: no license, stale repo, archived, single contributor, many open issues, etc.
+- Reward flags: actively maintained, many contributors, proper licensing, releases published, etc.
 
 ## Modes
 - **Noob**: Never seen a terminal. Full hand-holding, real-world analogies, celebrates wins
