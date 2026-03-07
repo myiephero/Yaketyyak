@@ -105,8 +105,10 @@ automatically. No copy-paste needed!
   anything and are great for learning!
 
 [bold]Modes:[/]
-  [green]Beginner[/]   Very detailed, assumes no prior knowledge
-  [yellow]Familiar[/]   Concise, assumes you know the basics
+  [magenta]Noob[/]           Never seen a terminal before. Full hand-holding
+  [green]Beginner[/]       Just starting out. Simple, clear explanations
+  [yellow]Intermediate[/]   Comfortable with basics. Focused, practical
+  [red]Advanced[/]       Experienced dev. Terse, expert-level only
 
 [bold]How translations work:[/]
   1. Your command/output is checked against a built-in knowledge
@@ -228,14 +230,14 @@ class TerminalTranslator(App):
     SUB_TITLE = "Type commands in the shell \u2014 get plain-language explanations"
 
     BINDINGS = [
-        Binding("ctrl+b", "toggle_mode", "Beginner/Familiar"),
-        Binding("ctrl+t", "toggle_ai", "Toggle AI"),
-        Binding("ctrl+l", "clear_translations", "Clear Translations"),
-        Binding("ctrl+s", "toggle_theme", "Switch Theme"),
-        Binding("ctrl+q", "quit", "Quit"),
+        Binding("ctrl+b", "toggle_mode", "Toggle Mode", key_display="Ctrl+B"),
+        Binding("ctrl+t", "toggle_ai", "AI Toggle", key_display="Ctrl+T"),
+        Binding("ctrl+l", "clear_translations", "Clear Panel", key_display="Ctrl+L"),
+        Binding("ctrl+s", "toggle_theme", "Switch Theme", key_display="Ctrl+S"),
+        Binding("ctrl+q", "quit", "Quit App", key_display="Ctrl+Q"),
     ]
 
-    mode = reactive("beginner")
+    mode = reactive("noob")
     use_ai = reactive(True)
     language = reactive("en")
 
@@ -272,10 +274,12 @@ class TerminalTranslator(App):
             yield Label("Mode:")
             yield Select(
                 [
+                    ("Noob", "noob"),
                     ("Beginner", "beginner"),
-                    ("Familiar", "familiar"),
+                    ("Intermediate", "intermediate"),
+                    ("Advanced", "advanced"),
                 ],
-                value="beginner",
+                value="noob",
                 id="mode-select",
                 allow_blank=False,
             )
@@ -337,7 +341,7 @@ class TerminalTranslator(App):
         trans.write(f"  [cyan]4.[/] [bold]{STARTER_COMMANDS[3][0]}[/] \u2014 {STARTER_COMMANDS[3][1]}")
         trans.write(f"  [cyan]5.[/] [bold]{STARTER_COMMANDS[4][0]}[/] \u2014 {STARTER_COMMANDS[4][1]}")
         trans.write("")
-        trans.write("[dim]Ctrl+B: Mode  |  Ctrl+T: AI  |  Ctrl+S: Theme  |  Ctrl+L: Clear  |  Ctrl+Q: Quit[/]")
+        trans.write("[dim]Ctrl+B: Toggle Mode  |  Ctrl+T: AI Toggle  |  Ctrl+S: Switch Theme  |  Ctrl+L: Clear Panel  |  Ctrl+Q: Quit App[/]")
         if not AI_AVAILABLE:
             trans.write("")
             trans.write("[yellow]AI is off \u2014 no AI backend detected.[/]")
@@ -739,17 +743,45 @@ class TerminalTranslator(App):
     def on_select_changed(self, event: Select.Changed) -> None:
         if event.select.id == "mode-select":
             self.mode = event.value
+            self._update_footer_for_mode(self.mode)
         elif event.select.id == "lang-select":
             self.language = event.value
 
+    MODE_ORDER = ["noob", "beginner", "intermediate", "advanced"]
+
+    def _update_footer_for_mode(self, mode_name: str) -> None:
+        if mode_name in ("intermediate", "advanced"):
+            new_bindings = [
+                Binding("ctrl+b", "toggle_mode", "Mode", key_display="^B"),
+                Binding("ctrl+t", "toggle_ai", "AI", key_display="^T"),
+                Binding("ctrl+l", "clear_translations", "Clear", key_display="^L"),
+                Binding("ctrl+s", "toggle_theme", "Theme", key_display="^S"),
+                Binding("ctrl+q", "quit", "Quit", key_display="^Q"),
+            ]
+        else:
+            new_bindings = [
+                Binding("ctrl+b", "toggle_mode", "Toggle Mode", key_display="Ctrl+B"),
+                Binding("ctrl+t", "toggle_ai", "AI Toggle", key_display="Ctrl+T"),
+                Binding("ctrl+l", "clear_translations", "Clear Panel", key_display="Ctrl+L"),
+                Binding("ctrl+s", "toggle_theme", "Switch Theme", key_display="Ctrl+S"),
+                Binding("ctrl+q", "quit", "Quit App", key_display="Ctrl+Q"),
+            ]
+        self._bindings.keys.clear()
+        for b in new_bindings:
+            self._bindings.bind(b.key, b.action, b.description, key_display=b.key_display)
+        try:
+            footer = self.query_one(Footer)
+            footer.refresh()
+        except Exception:
+            pass
+
     def action_toggle_mode(self) -> None:
         mode_select = self.query_one("#mode-select", Select)
-        if self.mode == "beginner":
-            self.mode = "familiar"
-            mode_select.value = "familiar"
-        else:
-            self.mode = "beginner"
-            mode_select.value = "beginner"
+        idx = self.MODE_ORDER.index(self.mode) if self.mode in self.MODE_ORDER else 0
+        next_idx = (idx + 1) % len(self.MODE_ORDER)
+        self.mode = self.MODE_ORDER[next_idx]
+        mode_select.value = self.mode
+        self._update_footer_for_mode(self.mode)
         status = self.query_one("#status-label", Label)
         status.update(f"Mode: {self.mode.title()}")
 
