@@ -56,7 +56,7 @@ from themes import (
     THEME_NAMES,
 )
 
-APP_VERSION = "1.3.5"
+APP_VERSION = "1.3.6"
 
 ANSI_ESCAPE = re.compile(r"\x1b\[[0-9;]*[a-zA-Z]|\x1b\].*?\x07|\x1b\[.*?[@-~]|\r")
 
@@ -521,41 +521,41 @@ class YaketyYak(App):
 
         logo_lines = [
             "",
-            f"  ╔{'═' * 50}╗",
-            f"  ║                                                  ║",
-            f"  ║  ██╗   ██╗ █████╗ ██╗  ██╗███████╗████████╗██╗   ║",
-            f"  ║  ╚██╗ ██╔╝██╔══██╗██║ ██╔╝██╔════╝╚══██╔══╝╚██╗  ║",
-            f"  ║   ╚████╔╝ ███████║█████╔╝ █████╗     ██║    ╚██╗ ║",
-            f"  ║    ╚██╔╝  ██╔══██║██╔═██╗ ██╔══╝     ██║     ██║ ║",
-            f"  ║     ██║   ██║  ██║██║  ██╗███████╗   ██║     ██╔╝ ║",
-            f"  ║     ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝   ╚═╝     ╚═╝  ║",
-            f"  ║                                                  ║",
-            f"  ║        ██╗   ██╗ █████╗ ██╗  ██╗                 ║",
-            f"  ║        ╚██╗ ██╔╝██╔══██╗██║ ██╔╝                 ║",
-            f"  ║         ╚████╔╝ ███████║█████╔╝                  ║",
-            f"  ║          ╚██╔╝  ██╔══██║██╔═██╗                  ║",
-            f"  ║           ██║   ██║  ██║██║  ██╗                 ║",
-            f"  ║           ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝                 ║",
-            f"  ║                                                  ║",
-            f"  ╚{'═' * 50}╝",
+            f"  ╔{'═' * 47}╗",
+            f"  ║                                               ║",
+            f"  ║  ██╗   ██╗ █████╗ ██╗ ██╗███████╗██████╗██╗  ║",
+            f"  ║  ╚██╗ ██╔╝██╔══██╗██║██╔╝██╔════╝╚═██╔═╝██║  ║",
+            f"  ║   ╚████╔╝ ███████║████╔╝ █████╗   ██║  ╚██╗ ║",
+            f"  ║    ╚██╔╝  ██╔══██║██╔██╗ ██╔══╝   ██║   ██║ ║",
+            f"  ║     ██║   ██║  ██║██║ ██╗██████╗  ██║  ██╔╝ ║",
+            f"  ║     ╚═╝   ╚═╝  ╚═╝╚═╝ ╚═╝╚═════╝  ╚═╝  ╚═╝  ║",
+            f"  ║                                               ║",
+            f"  ║       ██╗   ██╗ █████╗ ██╗ ██╗                ║",
+            f"  ║       ╚██╗ ██╔╝██╔══██╗██║██╔╝                ║",
+            f"  ║        ╚████╔╝ ███████║████╔╝                 ║",
+            f"  ║         ╚██╔╝  ██╔══██║██╔██╗                 ║",
+            f"  ║          ██║   ██║  ██║██║ ██╗                ║",
+            f"  ║          ╚═╝   ╚═╝  ╚═╝╚═╝ ╚═╝                ║",
+            f"  ║                                               ║",
+            f"  ╚{'═' * 47}╝",
             "",
         ]
 
         for line in logo_lines:
             t = Text(line)
-            t.stylize(accent)
+            t.stylize("green")
             shell_out.write(t)
 
         tag = Text(f"  Terminal Translator v{APP_VERSION}")
-        tag.stylize(f"bold {accent}")
+        tag.stylize("bold green")
         shell_out.write(tag)
 
         sub = Text("  Type a command below — explanations appear on the right")
-        sub.stylize(f"{dim_accent}")
+        sub.stylize("dark_green")
         shell_out.write(sub)
 
         sep = Text(f"  {'━' * 46}")
-        sep.stylize(f"{dim_accent}")
+        sep.stylize("dark_green")
         shell_out.write(sep)
         shell_out.write(Text(""))
 
